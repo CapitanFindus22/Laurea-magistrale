@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Wasm MIDI Player</title>
+</head>
+<body>
+    <button id="file">Select file</button>
+    <button id="play">Play</button>
+    <button id="pause">Pause</button>
+    <button id="stop">Stop</button>
+
+    <br>
+
+    <label for="volume">Volume</label>
+    <input type="range" id="volume" min="0" max="100" value="50">
+
+    <script type="module">
+        import init, { render_midi } from "./pkg/wasmidip.js";
+
+        await init();
+
+        document.getElementById("play").onclick = async () => {
+            const sf2Data = await fetch("GeneralUser-GS.sf2").then(r => r.arrayBuffer());
+            const midiData = await fetch("a.mid").then(r => r.arrayBuffer());
+
+            console.log("Rendering...");
+            const samples = render_midi(
+                new Uint8Array(sf2Data),
+                new Uint8Array(midiData)
+            );
+            console.log("OK, playing...");
+
+            const ctx = new AudioContext();
+            const buffer = ctx.createBuffer(2, samples.length / 2, 44100);
+
+            const L = buffer.getChannelData(0);
+            const R = buffer.getChannelData(1);
+
+            for (let i = 0, j = 0; i < samples.length; i += 2, j++) {
+                L[j] = samples[i];
+                R[j] = samples[i + 1];
+            }
+
+            const src = ctx.createBufferSource();
+            src.buffer = buffer;
+            src.connect(ctx.destination);
+            src.start();
+        };
+    </script>
+</body>
+</html>
