@@ -21,12 +21,76 @@
 
         await init();
 
-        let audioCtx = null;
-        let src = null;
-        let gainNode = null;
+        class MidiPlayer {
+            constructor(audioBuffer) {
+                this.audioBuffer = audioBuffer;
 
-        let isPlaying = false;
-        let isPaused = false;
+                this.audioCtx = new AudioContext();
+                this.gainNode = this.audioCtx.createGain();
+                this.gainNode.connect(this.audioCtx.destination);
+                this.gainNode.gain.value = document.getElementById("volume").value;
+
+                this.src = null;
+                this.isPlaying = false;
+                this.isPaused = false;
+            }
+
+            _createSource() {
+                this.src = this.audioCtx.createBufferSource();
+                this.src.buffer = this.audioBuffer;
+
+                this.src.connect(this.gainNode);
+
+                this.src.onended = () => {
+                    this.isPaused = false;
+                    this.isPlaying = false;
+                    this.src.stop();
+                    this.src = null;
+                };
+            }
+
+            play() {
+
+                if (this.isPaused) {
+                    this.audioCtx.resume();
+                    this.isPlaying = true;
+                    this.isPaused = false;
+                    return;
+                }
+
+                if (!this.src) {
+                    this._createSource();
+                    this.src.start(0, 0);
+                    this.isPlaying = true;
+                }
+            }
+
+            pause() {
+                if (this.isPlaying) {
+                    this.audioCtx.suspend();
+                    this.isPaused = true;
+                    this.isPlaying = false;
+                }
+            }
+
+            stop() {
+                if (this.isPlaying || this.isPaused) {
+
+                    if (this.isPaused) this.audioCtx.resume();
+
+                    this.src.stop();
+                    this.src = null;
+
+                    this.isPlaying = false;
+                    this.isPaused = false;
+                }
+            }
+
+            set volume(value) {
+                this.gainNode.gain.value = value;
+            }
+
+        }
 
         async function loadSampleBuffer() {
             const sf2Data = await fetch("GeneralUser-GS.sf2").then(r => r.arrayBuffer());
@@ -57,59 +121,14 @@
 
         let audioBuffer = await loadSampleBuffer();
 
-        document.getElementById("play").onclick = async () => {
+        const player = new MidiPlayer(audioBuffer);
 
-            if (isPaused) {
-                audioCtx.resume();
-                isPlaying = true;
-                isPaused = false;
-                return;
-            }
+        document.getElementById("play").onclick = () => player.play();
+        document.getElementById("pause").onclick = () => player.pause();
+        document.getElementById("stop").onclick = () => player.stop();
 
-            if (!isPlaying) {
-
-                audioCtx = new AudioContext();
-                src = audioCtx.createBufferSource();
-                src.buffer = audioBuffer;
-
-                gainNode = audioCtx.createGain();
-                gainNode.gain.value = document.getElementById("volume").value;
-
-                src.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                src.start(0, 0);
-                isPlaying = true;
-
-            }
-
-        };
-    
-        document.getElementById("pause").onclick = () => {
-            if (isPlaying) {
-                audioCtx.suspend();
-                isPaused = true;
-                isPlaying = false;
-            }
-        };
-    
-        document.getElementById("stop").onclick = () => {
-            if (isPlaying || isPaused) {
-                audioCtx.close();
-
-                src = null;
-                gainNode = null;
-                audioCtx = null;
-                isPaused = false;
-                isPlaying = false;
-            }
-        };
-
-            document.getElementById("volume").oninput = (ev) => {
-            if (gainNode) {
-                gainNode.gain.value = ev.target.value;
-            }
-        };
+        document.getElementById("volume").oninput = (ev) =>
+            player.volume = ev.target.value;
 
     </script>
 </body>
