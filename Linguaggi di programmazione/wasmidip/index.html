@@ -7,32 +7,42 @@
 </head>
 
 <body>
-    <!----<button id="file">Select file</button>-->
-    <button id="play">Play</button>
-    <button id="pause">Pause</button>
-    <button id="stop">Stop</button>
-
+    <input type="file" id="midiFile" accept=".mid,.midi">
+    <br><br>
+    <progress id="time" value="0" max="100"></progress>
+    <button id="play" disabled>Play</button>
+    <button id="pause" disabled>Pause</button>
+    <button id="stop" disabled>Stop</button>
     <br>
-
-    <input type="range" name="volume" id="volume" min="0" max="1" value="0.5" step="0.01">
-
+    <input type="range" name="volume" id="volume" min="0" max="1" value="0.5" step="0.01" disabled>
+    <!--Aggiungere controllo errori-->
+    <!--Migliorare UI-->
+    <!--Migliorare play/pause/stop-->
+    <!--Mettere progresso canzone-->
+    <!--Controllo contenuto file (Rust)-->
     <script type="module">
-        import init, { render_midi } from "./pkg/wasmidip.js";
+        import init, { check_header, render_midi } from "./pkg/wasmidip.js";
 
         await init();
+
+        const audioCtx = new AudioContext();
 
         class MidiPlayer {
             constructor(audioBuffer) {
                 this.audioBuffer = audioBuffer;
 
-                this.audioCtx = new AudioContext();
+                this.audioCtx = audioCtx;
                 this.gainNode = this.audioCtx.createGain();
                 this.gainNode.connect(this.audioCtx.destination);
                 this.gainNode.gain.value = document.getElementById("volume").value;
 
                 this.src = null;
+
                 this.isPlaying = false;
-                this.isPaused = false;
+
+                this.startTime = 0;
+                this.pauseTime = 0;
+
             }
 
             _createSource() {
@@ -42,93 +52,158 @@
                 this.src.connect(this.gainNode);
 
                 this.src.onended = () => {
-                    this.isPaused = false;
-                    this.isPlaying = false;
-                    this.src.stop();
-                    this.src = null;
-                };
+
+                    if (this.isPlaying && this.currentTime >= this.audioBuffer.duration) {
+
+                        document.getElementById("play").disabled = false;
+                        document.getElementById("pause").disabled = true;
+                        document.getElementById("stop").disabled = true;
+                    
+                        this.startTime = 0;
+                        this.pauseTime = 0;
+                        this.src = null;
+                        this.isPlaying = false;
+                        
+                    }
+
+                }
             }
 
             play() {
 
-                if (this.isPaused) {
-                    this.audioCtx.resume();
-                    this.isPlaying = true;
-                    this.isPaused = false;
-                    return;
-                }
+                document.getElementById("play").disabled = true;
+                document.getElementById("pause").disabled = false;
+                document.getElementById("stop").disabled = false;
 
                 if (!this.src) {
                     this._createSource();
-                    this.src.start(0, 0);
+                    this.src.start(0, this.pauseTime);
                     this.isPlaying = true;
+                    this.startTime = this.audioCtx.currentTime - this.pauseTime;
                 }
             }
 
             pause() {
-                if (this.isPlaying) {
-                    this.audioCtx.suspend();
-                    this.isPaused = true;
-                    this.isPlaying = false;
-                }
+
+                if (!this.isPlaying) return;
+
+                document.getElementById("pause").disabled = true;
+                document.getElementById("play").disabled = false;
+
+                this.src.stop();
+                this.src = null;
+                this.isPlaying = false;
+                this.pauseTime = this.audioCtx.currentTime - this.startTime;
+
             }
 
             stop() {
-                if (this.isPlaying || this.isPaused) {
 
-                    if (this.isPaused) this.audioCtx.resume();
+                document.getElementById("pause").disabled = true;
+                document.getElementById("play").disabled = false;
+                document.getElementById("stop").disabled = true;
 
+
+                if (this.src) {
                     this.src.stop();
                     this.src = null;
-
-                    this.isPlaying = false;
-                    this.isPaused = false;
                 }
+
+                this.isPlaying = false;
+                this.startTime = 0;
+                this.pauseTime = 0;
+
             }
 
             set volume(value) {
                 this.gainNode.gain.value = value;
             }
 
-        }
+            get currentTime() {
+                if (this.isPlaying) {
+                    return this.audioCtx.currentTime - this.startTime;
+                }
 
-        async function loadSampleBuffer() {
-            const sf2Data = await fetch("GeneralUser-GS.sf2").then(r => r.arrayBuffer());
-            const midiData = await fetch("a.mid").then(r => r.arrayBuffer());
+                return this.pauseTime;
 
-            console.log("Rendering...");
-            const samples = render_midi(
-                new Uint8Array(sf2Data),
-                new Uint8Array(midiData)
-            );
-
-            const buffer = new AudioBuffer({
-                length: samples.length / 2,
-                sampleRate: 44100,
-                numberOfChannels: 2
-            });
-
-            const L = buffer.getChannelData(0);
-            const R = buffer.getChannelData(1);
-
-            for (let i = 0, j = 0; i < samples.length; i += 2, j++) {
-                L[j] = samples[i];
-                R[j] = samples[i + 1];
             }
 
-            return buffer;
         }
 
-        let audioBuffer = await loadSampleBuffer();
+        async function renderMidiFile(file) {
 
-        const player = new MidiPlayer(audioBuffer);
+            const sf2Data = await fetch("GeneralUser-GS.sf2")
+                .then(r => r.arrayBuffer());
 
-        document.getElementById("play").onclick = () => player.play();
-        document.getElementById("pause").onclick = () => player.pause();
-        document.getElementById("stop").onclick = () => player.stop();
+            const midiData = await file.arrayBuffer();
+
+            const mData = new Uint8Array(midiData);
+
+            if (check_header(mData.subarray(0, 14))) {
+
+                console.log("Rendering...");
+                const samples = render_midi(
+                    new Uint8Array(sf2Data),
+                    mData
+                );
+
+                const buffer = new AudioBuffer({
+                    length: samples.length / 2,
+                    sampleRate: 44100,
+                    numberOfChannels: 2
+                });
+
+                const L = buffer.getChannelData(0);
+                const R = buffer.getChannelData(1);
+
+                L.set(samples.filter((_, i) => i % 2 === 0));
+                R.set(samples.filter((_, i) => i % 2 === 1));
+
+                return buffer;
+
+            }
+
+            null
+        }
+
+        let player = null;
+
+        document.getElementById("midiFile").addEventListener("change", async (ev) => {
+            const file = ev.target.files[0];
+            if (!file) return;
+
+            if (player) player.stop();
+
+            const audioBuffer = await renderMidiFile(file);
+
+            if (!audioBuffer) return;
+
+            player = new MidiPlayer(audioBuffer);
+
+            document.getElementById("play").disabled = false;
+            document.getElementById("volume").disabled = false;
+
+        });
+
+        document.getElementById("play").onclick = () => player?.play();
+        document.getElementById("pause").onclick = () => player?.pause();
+        document.getElementById("stop").onclick = () => player?.stop();
 
         document.getElementById("volume").oninput = (ev) =>
-            player.volume = ev.target.value;
+            player && (player.volume = ev.target.value);
+
+        const progress = document.getElementById("time");
+
+        setInterval(() => {
+            if (player && player.audioBuffer) {
+                const current = player.currentTime;
+                const duration = player.audioBuffer.duration;
+                const percent = (current / duration) * 100;
+                progress.value = percent;
+                progress.textContent = Math.floor(percent) + "%";
+            }
+        }, 100);
+
 
     </script>
 </body>
