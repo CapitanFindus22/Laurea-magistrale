@@ -2,13 +2,23 @@ use rustysynth::{MidiFile, MidiFileSequencer, SoundFont, Synthesizer, Synthesize
 use std::sync::Arc; //Serve per usare rustysynth
 use wasm_bindgen::prelude::*; //JS <-> WASM
 
-#[wasm_bindgen] //Esportabile in JS
-pub fn render_midi(sf2_data: &[u8], midi_data: &[u8]) -> Vec<f32> {
-    console_error_panic_hook::set_once();
+static mut SOUNDFONT: Option<Arc<SoundFont>> = None;
 
-    // Carica soundfont
+#[wasm_bindgen]
+pub fn load_sf2(sf2_data: &[u8]) {
     let mut sf2_cursor = std::io::Cursor::new(sf2_data);
     let sound_font = Arc::new(SoundFont::new(&mut sf2_cursor).unwrap());
+
+    unsafe {
+        SOUNDFONT = Some(sound_font);
+    }
+}
+
+#[wasm_bindgen] 
+pub fn render_midi(midi_data: &[u8]) -> Vec<f32> {
+    console_error_panic_hook::set_once();
+
+    let sound_font = unsafe { SOUNDFONT.as_ref().expect("SoundFont non caricata") };
 
     // Carica MIDI
     let mut midi_cursor = std::io::Cursor::new(midi_data);
@@ -42,15 +52,26 @@ pub fn render_midi(sf2_data: &[u8], midi_data: &[u8]) -> Vec<f32> {
     out
 }
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
+macro_rules! be_u32 {
+    ($x:expr) => {
+        u32::from_be_bytes($x.try_into().unwrap())
+    };
+}
+
+macro_rules! be_u16 {
+    ($x:expr) => {
+        u16::from_be_bytes($x.try_into().unwrap())
+    };
 }
 
 #[wasm_bindgen]
-pub fn check_header(header: &[u8]) -> bool {
-    if header.len() < 14 || &header[0..4] != b"MThd" || &header[4..8] != [0x00, 0x00, 0x00, 0x06] {
+pub fn check_midi_header(header: &[u8]) -> bool {
+    if header.len() < 14
+        || &header[0..4] != b"MThd"
+        || be_u32!(header[4..8]) != 6
+        || !(0..=2).contains(&be_u16!(header[8..10]))
+        || be_u16!(header[10..12]) == 0
+    {
         return false;
     }
 
