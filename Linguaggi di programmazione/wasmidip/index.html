@@ -4,25 +4,37 @@
 <head>
     <meta charset="utf-8">
     <title>Wasm MIDI Player</title>
+    <link rel="icon" type="image/png" href="/icons/music.png">
+    <link rel="stylesheet" href="a.css">
 </head>
 
 <body>
+    <!--Input e controlli riproduzione-->
     <input type="file" id="midiFile" accept=".mid,.midi">
     <br><br>
-    <progress id="time" value="0" max="100"></progress>
-    <button id="play" disabled>Play</button>
-    <button id="pause" disabled>Pause</button>
-    <button id="stop" disabled>Stop</button>
-    <br>
-    <input type="range" name="volume" id="volume" min="0" max="1" value="0.5" step="0.01" disabled>
+    <label>
+        ⌛
+        <progress id="time" value="0" max="100"></progress>
+    </label>
+    <button class="btn btn_play" id="play" disabled>▶️ Play</button>
+    <button class="btn btn_pause" id="pause" disabled>⏸️ Pause</button>
+    <button class="btn btn_stop" id="stop" disabled>⏹️ Stop</button>
+    <br><br>
+    <label>
+        🔈
+    <input class="vol" type="range" name="volume" id="volume" min="0" max="1" value="0.5" step="0.01" disabled>
+    </label>
     <!--Migliorare UI-->
-    <script type="module">
-        import init, { load_sf2, check_midi_header, render_midi } from "./pkg/wasmidip.js";
 
+    <!--JS-->
+    <script type="module">
+        //Importa il codice WASM generato
+        import init, { load_sf2, check_midi_header, render_midi } from "./pkg/wasmidip.js";
         await init();
 
-        const audioCtx = new AudioContext();
+        //Crea parte audio e carica soundfont
 
+        const audioCtx = new AudioContext();
         let sf2Data = null;
 
         try {
@@ -33,6 +45,7 @@
             alert("Soundfont non caricato");
         }
 
+        // Astrazione per semplificare il codice successivo
         class MidiPlayer {
             constructor(audioBuffer) {
                 this.audioBuffer = audioBuffer;
@@ -64,12 +77,12 @@
                         document.getElementById("play").disabled = false;
                         document.getElementById("pause").disabled = true;
                         document.getElementById("stop").disabled = true;
-                    
+
                         this.startTime = 0;
                         this.pauseTime = 0;
                         this.src = null;
                         this.isPlaying = false;
-                        
+
                     }
 
                 }
@@ -129,13 +142,12 @@
                 if (this.isPlaying) {
                     return this.audioCtx.currentTime - this.startTime;
                 }
-
                 return this.pauseTime;
-
             }
 
         }
 
+        // Crea il buffer audio per la riproduzione tramite WASM
         async function renderMidiFile(file) {
 
             const midiData = await file.arrayBuffer();
@@ -170,15 +182,17 @@
             return null;
         }
 
+        // Input file
         let player = null;
-
         document.getElementById("midiFile").addEventListener("change", async (ev) => {
-            
+
             if (sf2Data) {
 
                 const file = ev.target.files[0];
 
                 if (!file) return;
+
+                document.body.style.cursor = "wait";
 
                 if (player) player.stop();
 
@@ -187,6 +201,8 @@
                 if (!audioBuffer) return;
 
                 player = new MidiPlayer(audioBuffer);
+
+                document.body.style.cursor = "default";
 
                 document.getElementById("play").disabled = false;
                 document.getElementById("volume").disabled = false;
@@ -197,15 +213,15 @@
 
         });
 
+        // Controlli riproduzione
         document.getElementById("play").onclick = () => player?.play();
         document.getElementById("pause").onclick = () => player?.pause();
         document.getElementById("stop").onclick = () => player?.stop();
-
         document.getElementById("volume").oninput = (ev) =>
             player && (player.volume = ev.target.value);
 
+        // Mostra l'andamento della riproduzione
         const progress = document.getElementById("time");
-
         function updateProgress() {
 
             if (player && player.audioBuffer) {
@@ -215,11 +231,8 @@
                 progress.value = percent;
                 progress.textContent = Math.floor(percent) + "%";
             }
-
             requestAnimationFrame(updateProgress);
-
         }
-
         requestAnimationFrame(updateProgress);
 
     </script>

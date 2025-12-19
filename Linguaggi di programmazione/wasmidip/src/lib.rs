@@ -1,24 +1,25 @@
 use rustysynth::{MidiFile, MidiFileSequencer, SoundFont, Synthesizer, SynthesizerSettings};
 use std::sync::Arc; //Serve per usare rustysynth
 use wasm_bindgen::prelude::*; //JS <-> WASM
+use once_cell::sync::OnceCell;
 
-static mut SOUNDFONT: Option<Arc<SoundFont>> = None;
+static SOUNDFONT: OnceCell<Arc<SoundFont>> = OnceCell::new();
 
+/// Carica il soundfont
 #[wasm_bindgen]
 pub fn load_sf2(sf2_data: &[u8]) {
     let mut sf2_cursor = std::io::Cursor::new(sf2_data);
     let sound_font = Arc::new(SoundFont::new(&mut sf2_cursor).unwrap());
 
-    unsafe {
-        SOUNDFONT = Some(sound_font);
-    }
+    SOUNDFONT.set(sound_font).expect("SoundFont già caricato");
 }
 
+/// Crea un buffer audio e lo riempe renderizzando il file MIDI
 #[wasm_bindgen] 
 pub fn render_midi(midi_data: &[u8]) -> Vec<f32> {
     console_error_panic_hook::set_once();
 
-    let sound_font = unsafe { SOUNDFONT.as_ref().expect("SoundFont non caricata") };
+    let sound_font = SOUNDFONT.get().expect("SoundFont non caricato");
 
     // Carica MIDI
     let mut midi_cursor = std::io::Cursor::new(midi_data);
@@ -52,6 +53,8 @@ pub fn render_midi(midi_data: &[u8]) -> Vec<f32> {
     out
 }
 
+
+/// Macro usate nella funzione successiva
 macro_rules! be_u32 {
     ($x:expr) => {
         u32::from_be_bytes($x.try_into().unwrap())
@@ -64,6 +67,7 @@ macro_rules! be_u16 {
     };
 }
 
+/// Controlla che i primi byte del file midi combacino con quelli richiesti dallo standard
 #[wasm_bindgen]
 pub fn check_midi_header(header: &[u8]) -> bool {
     if header.len() < 14
