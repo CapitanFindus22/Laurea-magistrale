@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Wasm MIDI Player</title>
+    <link rel="icon" type="image/png" href="/icons/music.png">
+    <link rel="stylesheet" href="a.css">
+</head>
+
+<body>
+    <!--Input e controlli riproduzione-->
+    <input type="file" id="midiFile" accept=".mid,.midi">
+    <br><br>
+    <label>
+        ⌛
+        <progress id="time" value="0" max="100"></progress>
+    </label>
+    <button class="btn btn_play" id="play" disabled>▶️ Play</button>
+    <button class="btn btn_pause" id="pause" disabled>⏸️ Pause</button>
+    <button class="btn btn_stop" id="stop" disabled>⏹️ Stop</button>
+    <br><br>
+    <label>
+        🔈
+    <input class="vol" type="range" name="volume" id="volume" min="0" max="1" value="0.5" step="0.01" disabled>
+    </label>
+    <!--Migliorare UI-->
+
+    <!--JS-->
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
