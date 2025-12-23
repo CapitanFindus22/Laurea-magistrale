@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8">
+    <title>Wasm MIDI Player</title>
+    <link rel="icon" type="image/png" href="../icons/music.png">
+    <link rel="stylesheet" href="a.css">
+</head>
+
+<body>
+    <header>
+        <h1>Wasm MIDI Player</h1>
+    </header>
+
+    <main>
+        <!-- Caricamento file -->
+        <section class="file-upload">
+            <label for="midiFile">Carica file MIDI:</label>
+            <input type="file" id="midiFile" accept=".mid,.midi">
+        </section>
+
+        <!-- Controlli riproduzione -->
+        <section class="player-controls">
+            <div class="progress-container">
+                <label for="time">⌛</label>
+                <progress id="time" value="0" max="100"></progress>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn_play" id="play" disabled>▶️ Play</button>
+                <button class="btn btn_pause" id="pause" disabled>⏸️ Pause</button>
+                <button class="btn btn_stop" id="stop" disabled>⏹️ Stop</button>
+            </div>
+
+            <div class="volume-control">
+                <label for="volume">🔈</label>
+                <input type="range" id="volume" name="volume" min="0" max="1" step="0.01" value="0.5" disabled>
+            </div>
+
+            <div id="loading" hidden>
+                Caricamento…
+            </div>
+        </section>
+    </main>
+
+    <!-- Script -->
+    <script type="module" src="web_page/main.js"></script>
+</body>
+
+</html>

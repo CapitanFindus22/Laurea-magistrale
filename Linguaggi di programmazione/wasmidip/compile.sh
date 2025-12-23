@@ -1,2 +1,1 @@
-wasm-pack build --target web
-#mettere --release alla fine
+wasm-pack build --target web --release

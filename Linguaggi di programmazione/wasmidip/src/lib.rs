@@ -1,7 +1,7 @@
+use once_cell::sync::OnceCell;
 use rustysynth::{MidiFile, MidiFileSequencer, SoundFont, Synthesizer, SynthesizerSettings};
 use std::sync::Arc; //Serve per usare rustysynth
 use wasm_bindgen::prelude::*; //JS <-> WASM
-use once_cell::sync::OnceCell;
 
 static SOUNDFONT: OnceCell<Arc<SoundFont>> = OnceCell::new();
 
@@ -15,10 +15,13 @@ pub fn load_sf2(sf2_data: &[u8]) {
 }
 
 /// Crea un buffer audio e lo riempe renderizzando il file MIDI
-#[wasm_bindgen] 
+#[wasm_bindgen]
 pub fn render_midi(midi_data: &[u8]) -> Vec<f32> {
+
+    // Abilita scrittura panic in console JS
     console_error_panic_hook::set_once();
 
+    // Prendi Soundfont
     let sound_font = SOUNDFONT.get().expect("SoundFont non caricato");
 
     // Carica MIDI
@@ -29,11 +32,10 @@ pub fn render_midi(midi_data: &[u8]) -> Vec<f32> {
     let settings = SynthesizerSettings::new(44100);
     let synth = Synthesizer::new(&sound_font, &settings).unwrap();
 
-    // Crea sequenziatore
     let mut sequencer = MidiFileSequencer::new(synth);
     sequencer.play(&midi_file, false);
 
-    // Calcola samples totali
+    // Calcola campioni totali
     let sample_count = (settings.sample_rate as f64 * midi_file.get_length()) as usize;
 
     // Buffers audio sx e dx
@@ -41,7 +43,7 @@ pub fn render_midi(midi_data: &[u8]) -> Vec<f32> {
     let mut right = vec![0.0f32; sample_count];
     sequencer.render(&mut left, &mut right);
 
-    // Valori interleaved per semplificare estrazione successivamente
+    // Valori interleaved L/R per semplificare estrazione successivamente
     let mut out = vec![0.0f32; sample_count * 2];
 
     for i in 0..sample_count {
@@ -52,7 +54,6 @@ pub fn render_midi(midi_data: &[u8]) -> Vec<f32> {
 
     out
 }
-
 
 /// Macro usate nella funzione successiva
 macro_rules! be_u32 {
