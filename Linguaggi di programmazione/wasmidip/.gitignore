@@ -1,0 +1,22 @@
+# Directory dei file compilati di Cargo
+/target/
+
+# File di lock (utile per binari, ignorare per librerie se vuoi)
+Cargo.lock
+
+# File temporanei di editor e IDE
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+
+# File di configurazione di VS Code
+.vscode/
+
+# File di sistema (macOS, Windows)
+.DS_Store
+Thumbs.db
+
+# Log
+*.log
