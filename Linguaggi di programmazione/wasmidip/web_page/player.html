@@ -15,25 +15,25 @@
 
     <main>
         <!-- Caricamento file -->
-        <section class="file-upload">
+        <section style="margin-bottom: 10px;">
             <label for="midiFile">Carica file MIDI:</label>
             <input type="file" id="midiFile" accept=".mid,.midi">
         </section>
 
         <!-- Controlli riproduzione -->
-        <section class="player-controls">
-            <div class="progress-container">
+        <section>
+            <div style="margin-bottom: 10px;">
                 <label for="time">⌛</label>
                 <progress id="time" value="0" max="100"></progress>
             </div>
 
-            <div class="buttons">
-                <button class="btn btn_play" id="play" disabled>▶️ Play</button>
-                <button class="btn btn_pause" id="pause" disabled>⏸️ Pause</button>
-                <button class="btn btn_stop" id="stop" disabled>⏹️ Stop</button>
+            <div style="margin-bottom: 10px;">
+                <button class="btn" id="play" disabled>▶ Play</button>
+                <button class="btn" id="pause" disabled>⏸ Pause</button>
+                <button class="btn" id="stop" disabled>⏹ Stop</button>
             </div>
 
-            <div class="volume-control">
+            <div style="margin-bottom: 10px;">
                 <label for="volume">🔈</label>
                 <input type="range" id="volume" name="volume" min="0" max="1" step="0.01" value="0.5" disabled>
             </div>

@@ -14,18 +14,6 @@
   opacity: 0.6;
 }
 
-.btn_play {
-  color: #1db954;
-}
-
-.btn_pause {
-  color: #dde000;
-}
-
-.btn_stop {
-  color: #c01d1d;
-}
-
 .vol {
   cursor: pointer;
 }
