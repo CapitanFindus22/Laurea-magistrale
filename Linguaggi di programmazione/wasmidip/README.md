@@ -1,7 +1,7 @@
 # WASMIDIP
 
-Un player di file MIDI per browser, creato tramite JavaScript e WebAssembly (compilato da Rust).
+Un player di file MIDI per browser, creato con JavaScript e WebAssembly (compilato da Rust).
 
-Per compilare -> compile.sh
-Per eseguire -> start.sh
-Per accedere da browser -> localhost su porta 8000
+Per compilare la parte Rust -> compile.sh
+
+Per eseguire (con server PHP) -> start.sh e poi accedere da browser a localhost su porta 8000  
