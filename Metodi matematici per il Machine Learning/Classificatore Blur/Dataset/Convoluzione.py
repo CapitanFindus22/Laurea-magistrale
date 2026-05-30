@@ -4,17 +4,16 @@ from pathlib import Path
 import random
 
 # Path relativi
-path_in = Path(__file__).parent / "Originali"
-path_out = Path(__file__).parent / "Da usare"
+BASE_DIR = Path(__file__).resolve().parent
+path_in = BASE_DIR / "Ridimensionate"
+path_out = BASE_DIR / "Da usare"
 
-path_out.mkdir(parents=True, exist_ok=True)
+path_out.mkdir(exist_ok=True)
 
 # Lista dei kernel
 kernel = {
     "Box 3": np.ones((3, 3)) / 9,  # Box blur 3x3
-
     "Box 5": np.ones((5, 5)) / 25,  # Box blur 5x5
-
     "Gauss 3": np.array(
         [  # Gauss blur 3x3
             [1 / 16, 2 / 16, 1 / 16],
@@ -23,7 +22,6 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-
     "Gauss 5": np.array(
         [  # Gauss blur 5x5
             [1 / 256, 4 / 256, 6 / 256, 4 / 256, 1 / 256],
@@ -34,7 +32,6 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-
     "Circ 5": np.array(
         [  # Circular blur 5x5
             [0, 0, 1 / 13, 0, 0],
@@ -45,7 +42,6 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-
     "Kaw 5": np.array(
         [  # Kawase blur 5x5
             [0, 0, 1 / 8, 0, 0],
@@ -56,7 +52,6 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-
     "Mot_d": np.array(
         [  # Motion blur diagonale
             [1 / 5, 0, 0, 0, 0],
@@ -67,7 +62,6 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-
     "Mot_h": np.array(
         [  # Motion blur orizzontale
             [0, 0, 0, 0, 0],
@@ -78,7 +72,6 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-
     "Mot_v": np.array(
         [  # Motion blur verticale
             [0, 0, 1 / 5, 0, 0],
@@ -89,7 +82,6 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-    
     "GPT": np.array(
         [  # Creato da ChatGPT (così sono 10)
             [3 / 104, 1 / 104, 4 / 104, 2 / 104, 5 / 104],
@@ -103,8 +95,6 @@ kernel = {
 }
 
 
-kernel_items = list(kernel.items())
-
 VALID_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 
 # Per ogni immagine scegli un kernel a caso
@@ -117,7 +107,7 @@ for f in path_in.iterdir():
 
     if img is not None:
 
-        tp, ker = random.choice(kernel_items)
+        tp, ker = random.choice(list(kernel.items()))
 
         out = cv2.filter2D(img, -1, ker)
 
@@ -125,5 +115,3 @@ for f in path_in.iterdir():
             str(path_out / f"{f.stem}_{tp}{f.suffix}"),
             out,
         )
-
-        print(f"{f.name} -> {tp}")
