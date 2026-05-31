@@ -8,6 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent
 path_in = BASE_DIR / "Ridimensionate"
 path_out = BASE_DIR / "Da usare"
 
+# Crea cartella se non esiste
 path_out.mkdir(exist_ok=True)
 
 # Lista dei kernel
@@ -94,23 +95,29 @@ kernel = {
     ),
 }
 
-
+# Estensioni valide (Giusto per generalizzare)
 VALID_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 
 # Per ogni immagine scegli un kernel a caso
 for f in path_in.iterdir():
 
+    # Immagine non supportata?
     if f.suffix.lower() not in VALID_EXTENSIONS:
         continue
 
+    # Apri immagine
     img = cv2.imread(str(f))
 
+    # Lettura ok?
     if img is not None:
 
+        # Scegli kernel
         tp, ker = random.choice(list(kernel.items()))
 
+        # Applica convoluzione
         out = cv2.filter2D(img, -1, ker)
 
+        # Salva specificando il kernel usato
         cv2.imwrite(
             str(path_out / f"{f.stem}_{tp}{f.suffix}"),
             out,
