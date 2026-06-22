@@ -3,6 +3,9 @@ import numpy as np
 from pathlib import Path
 import random
 
+# Riproducibilità
+random.seed(42)
+
 # Path relativi
 BASE_DIR = Path(__file__).resolve().parent
 path_in = BASE_DIR / "Ridimensionate"
@@ -98,8 +101,15 @@ kernel = {
 # Estensioni valide (Giusto per generalizzare)
 VALID_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 
+# Crea sottocartelle
+for tp in kernel:
+    (path_out / tp).mkdir(exist_ok=True)
+
+
+kernel_items = list(kernel.items())
+
 # Per ogni immagine scegli un kernel a caso
-for f in path_in.iterdir():
+for f in sorted(path_in.iterdir()):
 
     # Immagine non supportata?
     if f.suffix.lower() not in VALID_EXTENSIONS:
@@ -112,13 +122,13 @@ for f in path_in.iterdir():
     if img is not None:
 
         # Scegli kernel
-        tp, ker = random.choice(list(kernel.items()))
+        tp, ker = random.choice(kernel_items)
 
         # Applica convoluzione
         out = cv2.filter2D(img, -1, ker)
 
         # Salva specificando il kernel usato
         cv2.imwrite(
-            str(path_out / f"{f.stem}_{tp}{f.suffix}"),
+            str(path_out / tp / f"{f.stem}_{tp}{f.suffix}"),
             out,
         )

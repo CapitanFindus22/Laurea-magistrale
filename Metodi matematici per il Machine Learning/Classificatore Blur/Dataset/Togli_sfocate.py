@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent
 path_imm = BASE_DIR / "Ridimensionate"
 
 # Soglia di cancellazione
-BLUR_THRESHOLD = 300
+BLUR_THRESHOLD = 350
 
 # Cancella SI/NO
 DELETE_BLURRY = True
@@ -25,9 +25,6 @@ def blur_score(img):
 def analyze_folder(folder_path):
 
     total_images = blurry_images = deleted_images = 0
-
-    min_resolution = None
-    max_resolution = None
 
     # Controlla se cartella esiste
     if not folder_path.exists():
@@ -48,18 +45,6 @@ def analyze_folder(folder_path):
         if img is None:
             print(f"Errore lettura: {f.name}")
             continue
-
-        # Calcola risoluzione
-        height, width = img.shape[:2]
-        resolution = (width, height)
-        pixels = width * height
-
-        # Aggiorna min/max risoluzione
-        if min_resolution is None or pixels < min_resolution[0] * min_resolution[1]:
-            min_resolution = resolution
-
-        if max_resolution is None or pixels > max_resolution[0] * max_resolution[1]:
-            max_resolution = resolution
 
         # Calcola blur score
         score = blur_score(img)
@@ -87,11 +72,5 @@ def analyze_folder(folder_path):
     # Num. cancellate
     if DELETE_BLURRY:
         print(f"Cancellate      : {deleted_images}")
-
-    # Risoluzioni min/max
-    if total_images > 0:
-        print(f"Risoluzione min : {min_resolution[0]}x{min_resolution[1]}")
-        print(f"Risoluzione max : {max_resolution[0]}x{max_resolution[1]}")
-
 
 analyze_folder(path_imm)

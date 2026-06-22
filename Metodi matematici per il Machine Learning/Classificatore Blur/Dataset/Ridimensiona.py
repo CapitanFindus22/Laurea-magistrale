@@ -52,9 +52,9 @@ def resize(img):
     left = delta_w // 2
     right = delta_w - left
 
-    # Aggiungi padding se necessario (replica)
+    # Aggiungi padding
     return cv2.copyMakeBorder(
-        resized, top, bottom, left, right, borderType=cv2.BORDER_REPLICATE
+        resized, top, bottom, left, right, borderType=cv2.BORDER_CONSTANT
     )
 
 
@@ -63,6 +63,7 @@ def analyze_folder(folder_path):
 
     total_images = 0
     skipped_small = 0
+    skipped_ratio = 0
     saved_images = 0
 
     # Controlla se cartella esiste
@@ -94,6 +95,13 @@ def analyze_folder(folder_path):
             skipped_small += 1
             continue
 
+        # Scarta immagini troppo sbilanciate
+        ratio = width / height
+
+        if ratio > 2 or ratio < 0.5:
+            skipped_ratio += 1
+            continue
+
         # Ridimensiona e salva
         processed = resize(img)
 
@@ -112,7 +120,7 @@ def analyze_folder(folder_path):
 
     print(f"Totale immagini     : {total_images}")
     print(f"Salvate             : {saved_images}")
-    print(f"Scartate piccole    : {skipped_small}")
+    print(f"Scartate            : {skipped_small + skipped_ratio}")
 
 
 analyze_folder(path_imm)
