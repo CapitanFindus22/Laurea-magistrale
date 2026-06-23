@@ -16,9 +16,9 @@ path_out.mkdir(exist_ok=True)
 
 # Lista dei kernel
 kernel = {
-    "Box 3": np.ones((3, 3)) / 9,  # Box blur 3x3
-    "Box 5": np.ones((5, 5)) / 25,  # Box blur 5x5
-    "Gauss 3": np.array(
+    "Box_3": np.ones((3, 3)) / 9,  # Box blur 3x3
+    "Box_5": np.ones((5, 5)) / 25,  # Box blur 5x5
+    "Gauss_3": np.array(
         [  # Gauss blur 3x3
             [1 / 16, 2 / 16, 1 / 16],
             [2 / 16, 4 / 16, 2 / 16],
@@ -26,7 +26,7 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-    "Gauss 5": np.array(
+    "Gauss_5": np.array(
         [  # Gauss blur 5x5
             [1 / 256, 4 / 256, 6 / 256, 4 / 256, 1 / 256],
             [4 / 256, 16 / 256, 24 / 256, 16 / 256, 4 / 256],
@@ -36,7 +36,7 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-    "Circ 5": np.array(
+    "Circ_5": np.array(
         [  # Circular blur 5x5
             [0, 0, 1 / 13, 0, 0],
             [0, 1 / 13, 1 / 13, 1 / 13, 0],
@@ -46,7 +46,7 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-    "Kaw 5": np.array(
+    "Kaw_5": np.array(
         [  # Kawase blur 5x5
             [0, 0, 1 / 8, 0, 0],
             [0, 1 / 8, 0, 1 / 8, 0],
