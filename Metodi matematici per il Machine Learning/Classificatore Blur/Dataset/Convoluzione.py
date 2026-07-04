@@ -6,12 +6,13 @@ import random
 # Riproducibilità
 random.seed(42)
 
+MAX_IMAGES = 50000
+
 # Path relativi
 BASE_DIR = Path(__file__).resolve().parent
 path_in = BASE_DIR / "Ridimensionate"
 path_out = BASE_DIR / "Da usare"
 
-# Crea cartella se non esiste
 path_out.mkdir(exist_ok=True)
 
 # Lista dei kernel
@@ -86,39 +87,38 @@ kernel = {
         ],
         dtype=np.float32,
     ),
-    "GPT": np.array(
-        [  # Creato da ChatGPT (così sono 10)
-            [3 / 104, 1 / 104, 4 / 104, 2 / 104, 5 / 104],
-            [2 / 104, 6 / 104, 8 / 104, 3 / 104, 1 / 104],
-            [5 / 104, 9 / 104, 12 / 104, 7 / 104, 2 / 104],
-            [1 / 104, 4 / 104, 7 / 104, 6 / 104, 3 / 104],
-            [2 / 104, 3 / 104, 5 / 104, 2 / 104, 1 / 104],
+    "Originale": np.array(
+        [
+            [0, 0, 0],
+            [0, 1, 0],
+            [0, 0, 0],
         ],
         dtype=np.float32,
     ),
 }
 
-# Estensioni valide (Giusto per generalizzare)
 VALID_EXTENSIONS = [".jpg", ".jpeg", ".png"]
 
-# Crea sottocartelle
 for tp in kernel:
     (path_out / tp).mkdir(exist_ok=True)
 
-
+# Per riproducibilità al 100%
 kernel_items = list(kernel.items())
 
-# Per ogni immagine scegli un kernel a caso
-for f in sorted(path_in.iterdir()):
+files = [f for f in path_in.iterdir() if f.suffix.lower() in VALID_EXTENSIONS]
 
-    # Immagine non supportata?
+random.shuffle(files)
+
+files = files[:MAX_IMAGES]
+
+# Per ogni immagine scegli un kernel a caso
+for f in files:
+
     if f.suffix.lower() not in VALID_EXTENSIONS:
         continue
 
-    # Apri immagine
-    img = cv2.imread(str(f))
+    img = cv2.imread(str(f), cv2.IMREAD_GRAYSCALE)
 
-    # Lettura ok?
     if img is not None:
 
         # Scegli kernel

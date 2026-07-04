@@ -1,7 +1,9 @@
+% Calcola la varianza del Laplaciano per ogni immagine e salva i risultati in un file CSV.
+
 clear; clc;
 
+% Immagini
 path = fullfile('Dataset','Da usare');
-
 imgs = imageDatastore(path,...
     'IncludeSubfolders',true,...
     'LabelSource','foldernames');
