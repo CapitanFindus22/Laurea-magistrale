@@ -25,15 +25,19 @@ layers = [
     "Normalization", "rescale-zero-one")
 
     convolution2dLayer(5, 8, ...
-        "WeightsInitializer","he", ...
-        "Name","conv1")
+        "WeightsInitializer","he")
     batchNormalizationLayer
     reluLayer
     maxPooling2dLayer(2, "Stride", 2)
 
     convolution2dLayer(3, 16, ...
-        "WeightsInitializer","he", ...
-        "Name","conv2")
+        "WeightsInitializer","he")
+    batchNormalizationLayer
+    reluLayer
+    maxPooling2dLayer(2, "Stride", 2)
+
+    convolution2dLayer(3, 32, ...
+        "WeightsInitializer","he")
     batchNormalizationLayer
     reluLayer
     maxPooling2dLayer(2, "Stride", 2)
@@ -68,4 +72,4 @@ options = trainingOptions("sgdm", ...
 net = trainNetwork(imgsTrain, layers, options);
 
 %% Salvataggio
-save('rete1.mat', 'net', 'options', 'layers');
+save('rete2.mat', 'net', 'options', 'layers');
