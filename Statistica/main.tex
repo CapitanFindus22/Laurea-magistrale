@@ -1,0 +1,1599 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{accents}
+\usepackage{xcolor}
+\usepackage{amsthm}
+\usepackage{diagbox}
+
+
+\newtheorem{theorem}{Teorema}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\df}{\noindent\textbf{Definizione} }
+
+\newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+
+
+\title{Statistica}
+\author{Leonardo Ganzaroli}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\hypersetup{allcolors=black}
+
+
+\section{Elementi utili}
+
+\noindent\textbf{Bernoulli} \[ \boxed{X\sim \operatorname{Ber}(p)} \]
+
+\[
+\begin{aligned}
+P(X=x)
+&=
+p^x(1-p)^{1-x},
+\qquad x\in\{0,1\},
+\\[0.5em]
+E[X]
+&=
+p,
+\qquad
+\operatorname{Var}(X)=p(1-p).
+\end{aligned}
+\]
+
+\medskip
+
+\noindent\textbf{Binomiale} \[ \boxed{X\sim \operatorname{Bin}(n,p)} \]
+
+\[
+\begin{aligned}
+P(X=x)
+&=
+\binom{n}{x}p^x(1-p)^{n-x},
+\qquad x=0,\ldots,n,
+\\[0.5em]
+E[X]
+&=
+np,
+\qquad
+\operatorname{Var}(X)=np(1-p).
+\end{aligned}
+\]
+
+\medskip
+
+\noindent\textbf{Multinomiale} \[ \boxed{ (X_1,\ldots,X_k) \sim \operatorname{Mult}(n,p_1,\ldots,p_k) } \]
+
+\[
+\begin{aligned}
+P(X_1=x_1,\ldots,X_k&=x_k)
+=
+\frac{n!}{x_1!\cdots x_k!}
+\prod_{i=1}^{k}p_i^{x_i},
+\qquad
+\sum_{i=1}^{k}x_i=n,
+\\[0.5em]
+E[X_i]
+&=
+np_i,\qquad
+\operatorname{Var}(X_i)
+=
+np_i(1-p_i).
+\end{aligned}
+\]
+
+\medskip
+
+\noindent\textbf{Poisson} \[ \boxed{X\sim\operatorname{Pois}(\lambda)} \]
+
+\[
+\begin{aligned}
+P(X=x)
+&=
+\frac{\lambda^x e^{-\lambda}}{x!},
+\qquad x=0,1,2,\ldots,\ \lambda>0
+\\[0.5em]
+E[X]
+&=
+\operatorname{Var}(X)=\lambda.
+\end{aligned}
+\]
+
+\medskip
+
+%------------------------------------------------
+
+\noindent\textbf{Uniforme continua} \[ \boxed{X\sim U(a,b)} \]
+
+\[
+\begin{aligned}
+f(x)
+&=
+\frac1{b-a},
+\qquad a<x<b,
+\\[0.5em]
+E[X]
+&=
+\frac{a+b}{2},
+\qquad
+\operatorname{Var}(X)=\frac{(b-a)^2}{12}.
+\end{aligned}
+\]
+
+\newpage
+
+\noindent\textbf{Esponenziale} \[ \boxed{X\sim\operatorname{Exp}(\lambda)} \]
+
+\[
+\begin{aligned}
+f(x)
+&=
+\lambda e^{-\lambda x},
+\qquad x,\ \lambda>0,
+\\[0.5em]
+E[X]
+&=
+\frac1\lambda,
+\qquad
+\operatorname{Var}(X)=\frac1{\lambda^2}.
+\end{aligned}
+\]
+
+\medskip
+
+\noindent\textbf{Gamma} ($\beta$ parametro di tasso) \[ \boxed{X\sim\Gamma(\alpha,\beta)} \]
+
+
+\[
+\begin{aligned}
+f(x)
+&=
+\frac{\beta^\alpha}{\Gamma(\alpha)}
+x^{\alpha-1}e^{-\beta x},
+\qquad x>0,\ \alpha,\beta >0,
+\\[0.5em]
+E[X]
+&=
+\frac{\alpha}{\beta},
+\qquad
+\operatorname{Var}(X)=\frac{\alpha}{\beta^2}.
+\end{aligned}
+\]
+
+Si ha
+
+\[
+X_1,\ldots,X_n
+\stackrel{\mathrm{iid}}{\sim}
+\operatorname{Exp}(\lambda)
+\Rightarrow
+\sum_{i=1}^{n}X_i
+\sim
+\Gamma(n,\lambda)
+\]
+
+Inoltre
+
+\[
+\bar X=\frac1n\sum_{i=1}^{n}X_i
+\sim
+\Gamma(n,n\lambda)
+\]
+
+%------------------------------------------------
+
+\noindent\textbf{Beta} \[ \boxed{X\sim\operatorname{Beta}(\alpha,\beta)} \]
+
+\[
+\begin{aligned}
+f(x)
+&=
+\frac{\Gamma(\alpha+\beta)}
+{\Gamma(\alpha)\Gamma(\beta)}
+x^{\alpha-1}(1-x)^{\beta-1},
+\qquad 0<x<1,\ \alpha,\beta >0,
+\\[0.5em]
+E[X]
+&=
+\frac{\alpha}{\alpha+\beta},
+\qquad
+\operatorname{Var}(X)=
+\frac{\alpha\beta}
+{(\alpha+\beta)^2(\alpha+\beta+1)}.
+\end{aligned}
+\]
+
+%------------------------------------------------
+
+\noindent\textbf{Normale} \[ \boxed{X\sim N(\mu,\sigma^2)} \]
+
+\[
+\begin{aligned}
+f(x)
+&=
+\frac1{\sigma\sqrt{2\pi}}
+\exp\left(
+-\frac{(x-\mu)^2}{2\sigma^2}
+\right),\qquad \sigma>0,
+\\[0.5em]
+E[X]
+&=
+\mu,
+\qquad
+\operatorname{Var}(X)=\sigma^2.
+\end{aligned}
+\]
+
+\vspace{10pt}
+
+\[
+\boxed{
+\textbf{N.B.}\qquad
+X\sim N(\mu,\sigma^2)
+\Rightarrow
+Z=\frac{X-\mu}{\sigma}\sim N(0,1)
+}
+\]
+
+\newpage
+
+Se
+
+\[
+X_1,\ldots,X_n \text{ indipendenti},
+\qquad
+X_i\sim N(\mu_i,\sigma_i^2)
+\]
+
+allora
+
+\[
+\sum_{i=1}^{n}X_i
+\sim
+N\left(
+\sum_{i=1}^{n}\mu_i,
+\sum_{i=1}^{n}\sigma_i^2
+\right)
+\]
+
+Inoltre
+
+\[
+X_1,\ldots,X_n
+\stackrel{\mathrm{iid}}{\sim}
+N(\mu,\sigma^2)
+\Rightarrow
+\bar X
+\sim
+N\left(
+\mu,\frac{\sigma^2}{n}
+\right)
+\]
+
+%------------------------------------------------
+
+\noindent\textbf{t di Student} \[ \boxed{X\sim t_\nu} \]
+
+\[
+f(x)
+=
+\frac{\Gamma\!\left(\frac{\nu+1}{2}\right)}
+{\sqrt{\nu\pi}\Gamma\!\left(\frac{\nu}{2}\right)}
+\left(1+\frac{x^2}{\nu}\right)^{-\frac{\nu+1}{2}},
+\]
+
+\[
+E[X]=0
+\quad(\nu>1),
+\qquad
+\operatorname{Var}(X)
+=
+\frac{\nu}{\nu-2}
+\quad(\nu>2).
+\]
+
+Se
+
+\[
+Z\sim N(0,1),
+\qquad
+V\sim\chi^2_\nu
+\]
+
+sono indipendenti, allora
+
+\[
+\frac{Z}{\sqrt{V/\nu}}
+\sim t_\nu
+\]
+
+Inoltre:
+
+\[
+X_1,\ldots,X_n
+\stackrel{\mathrm{iid}}{\sim}
+N(\mu,\sigma^2)
+\Rightarrow
+\frac{\bar X-\mu}{S/\sqrt n}
+\sim t_{n-1}
+\]
+
+%------------------------------------------------
+
+\noindent\textbf{Chi-quadro} \[ \boxed{X\sim\chi^2_k} \]
+
+\[
+Z_1,\ldots,Z_k
+\stackrel{\mathrm{iid}}{\sim}
+N(0,1)
+\Rightarrow
+\sum_{i=1}^{k}Z_i^2
+\sim\chi^2_k,
+\]
+
+\[
+E[X]=k,
+\qquad
+\operatorname{Var}(X)=2k.
+\]
+
+Si ha
+
+\[
+X_1,\ldots,X_n
+\stackrel{\mathrm{iid}}{\sim}
+N(\mu,\sigma^2)\Rightarrow
+\boxed{
+\frac{(n-1)S^2}{\sigma^2}
+\sim
+\chi^2_{n-1}
+}
+\]\vspace{10pt}
+
+\noindent\textit{Nota: $S^2$ è la varianza campionaria, vedere la sezione 2.}
+
+\newpage
+
+%------------------------------------------------
+
+\noindent\textbf{F di Fisher} \[ \boxed{X\sim F_{d_1,d_2}} \]
+
+Se
+
+\[
+A\sim\chi^2_{d_1},
+\qquad
+B\sim\chi^2_{d_2}
+\]
+
+sono indipendenti, allora
+
+\[
+X=
+\frac{A/d_1}{B/d_2}
+\sim
+F_{d_1,d_2}
+\]
+
+\[
+E[X]
+=
+\frac{d_2}{d_2-2},
+\qquad d_2>2,\qquad
+\operatorname{Var}(X)
+=
+\frac{2d_2^2(d_1+d_2-2)}
+{d_1(d_2-2)^2(d_2-4)},
+\qquad d_2>4.
+\]
+
+%------------------------------------------------
+
+\noindent\textbf{Legge (debole) dei Grandi Numeri}:\newline
+
+Se
+
+\[
+X_1,\ldots,X_n
+\stackrel{\mathrm{iid}}{\sim}X
+\]
+
+con
+
+\[
+E[|X|]<\infty,
+\qquad
+E[X]=\mu
+\]
+
+allora
+
+\[
+\boxed{
+\bar X
+=
+\frac1n\sum_{i=1}^{n}X_i
+\overset{P}{\longrightarrow}
+\mu
+}
+\]
+
+\vspace{5pt}
+
+%------------------------------------------------
+
+\noindent\textbf{Teorema del Limite Centrale}:\newline
+
+Se
+
+\[
+X_1,\ldots,X_n
+\stackrel{\mathrm{iid}}{\sim}X
+\]
+
+con
+
+\[
+E[X]=\mu,
+\qquad
+\operatorname{Var}(X)=\sigma^2<\infty
+\]
+
+allora:
+
+\[
+\boxed{
+\frac{\bar X-\mu}{\sigma/\sqrt n}
+\overset{d}{\longrightarrow}
+N(0,1)
+}
+\]
+
+ovvero con $n$ grande:
+
+\[
+\boxed{
+\bar X
+\approx
+N\left(
+\mu,\frac{\sigma^2}{n}
+\right)
+}
+\]
+
+
+
+\section{Campioni e statistiche}
+
+\df Un campione casuale di taglia $n$ è una sequenza di variabili aleatorie iid con distribuzione $F_\theta$ e $\theta$ parametro ignoto:
+
+$$X_1,X_2,\cdots, X_n\stackrel{\mathrm{iid}}{\sim}F_\theta$$\newline
+
+Alcuni metodi per generare campioni casuali:
+\begin{itemize}
+    \item \textbf{Metodo dell'inversione}
+
+    Data la funzione di ripartizione $F(x)=P(X\leq x)$;
+    
+    Si genera un numero casuale $u$ da $U(0,1)$;
+    
+    Si calcola $x=F^{-1}(u)$;
+
+    Il numero $x$ sarà distribuito secondo $F$.
+
+    \item \textbf{Trasformazione di Box-Muller (originale)}
+
+    Prendo $U_1,U_2\sim U(0,1)$;
+
+    Con le seguenti formule si ottengono due gaussiane standard indipendenti:
+    \[
+    Z_1=\sqrt{-2\ln{(U_1)}}\cos(2\pi U_2),\qquad
+    Z_2=\sqrt{-2\ln{(U_1)}}\sin(2\pi U_2)
+    \]
+    
+    Con cui si può costruire una normale con media e varianza scelti:
+    
+    \[
+    X=\mu+\sigma Z_{(1 \text{ oppure } 2)}\Rightarrow X\sim N(\mu,\sigma^2)
+    \]
+
+    \item \textbf{Metodo di accettazione-rifiuto}
+
+    Data $f(x)$, si sceglie $g(x)$ tale che $\forall x\ f(x)\leq M g(x)\ \ (M\geq\sup_x\frac{f(x)}{g(x)})$;
+    
+    Si generano $x\sim g(x)$ e $ u\sim U(0,1)$;
+    
+    Si accetta il valore se $u\leq \frac{f(x)}{M g(x)}$.\newline
+
+\end{itemize}
+
+\df Una statistica è una funzione del campione $(X_1,\cdots,X_n)$:
+
+$$T:\mathbb{R}^n\rightarrow\mathbb{R}$$
+
+Dato che il campione è formato da v.a. la statistica in sé è una v.a.\newline
+
+Alcune statistiche sono:
+\begin{itemize}
+    \item \textbf{Media campionaria}
+    \[
+        \bar X=\frac1n\sum_{i=1}^n X_i
+    \]
+
+    \item \textbf{Varianza campionaria}
+    \[
+        S^2=\frac1{n-1}\sum_{i=1}^n (X_i-\bar X)^2
+    \]
+
+    \item \textbf{Statistiche d'ordine}
+
+    Ottenute ordinando il campione in ordine crescente:
+    \[
+        X_{(1)}\le X_{(2)}\le\cdots\le X_{(n)}
+    \]
+    dove \(X_{(i)}\) rappresenta la \(i\)-esima osservazione più piccola del campione.
+
+    \item \textbf{Mediana campionaria}
+    \[
+        M=
+        \begin{cases}
+            X_{\left(\frac{n+1}{2}\right)} & \text{se } n \text{ è dispari},\\[1ex]
+            \dfrac{X_{\left(\frac n2\right)}+X_{\left(\frac n2+1\right)}}{2}
+            & \text{ altrimenti}.
+        \end{cases}
+    \]
+
+    \item \textbf{Minimo} e \textbf{Massimo}
+    \[
+        X_{(1)},\ X_{(n)}
+    \]
+
+\end{itemize}
+
+\vspace{7pt}
+
+Alcune proprietà che può avere una statistica:
+\begin{description}
+    \item[Sufficienza] 
+
+        La statistica contiene tutta l'informazione presente nel campione riguardo a $\theta$.
+    
+    \item[Minimalità] 
+
+        La statistica è funzione di qualsiasi altra statistica sufficiente.
+    
+    \item[Completezza]
+
+        Non esistono funzioni non banali della statistica che hanno valore atteso 0 per ogni valore assumibile da $\theta$.
+
+    \item[Ancillarità]
+
+        La distribuzione della statistica non dipende dal parametro da stimare.
+    
+\end{description}
+
+\vspace{5pt}
+
+\begin{theorem}[Basu]
+    Qualsiasi statistica sufficiente e limitatamente completa\footnote{La completezza limitata è una forma più debole della completezza.} è indipendente da qualsiasi statistica ancillare.
+\end{theorem}
+
+\vspace{5pt}
+
+Esistono dei metodi per capire se una statistica ha le prime 2 proprietà:
+\begin{itemize}
+    \item \textbf{Sufficienza}
+        \begin{itemize}
+            \item Capire se $P_\theta(X=x\ |\ T(X)=t)$ non dipende da $\theta$;
+            \item Usare la fattorizzazione di Neyman-Fisher:
+                $$\prod_{i=1}^nf_\theta(x_i)=g(T(x),\theta)h(x)$$
+
+                Ossia capire se si può ``dividere'' la produttoria in una parte che dipende dal parametro e dalla statistica e un'altra che dipende solo dal campione.
+                
+        \end{itemize}
+    \item \textbf{Minimalità}
+            $$\text{Verificare che (dati 2 campioni $x,y$): }
+            \frac{\prod_{i=1}^nf_\theta(x_i)}{\prod_{i=1}^nf_\theta(y_i)} \text{ non dipende da } \theta \iff T(X)=T(Y)$$
+\end{itemize}
+
+Esempi:
+
+\begin{itemize}
+    \item \textbf{Esponenziale con $\lambda$ ignota} 
+
+        $$\lambda e^{-\lambda x}\rightarrow\prod_{i=1}^n\lambda e^{-\lambda x_i}\rightarrow\textcolor{red}{1}*\textcolor{blue}{\lambda^n e^{-\lambda \sum_{i=1}^nx_i}}$$
+
+        In questo caso l'intera formula è \textcolor{blue}{$g(T(X),\lambda)$}, moltiplicando la formula per 1 posso prendere quest'ultimo come \textcolor{red}{$h(x)$}. Quindi la somma è sufficiente.
+
+    \item \textbf{Uniforme $(0,\theta)$} 
+
+        (Qui devo considerare anche il vincolo dato che in questo compare $\theta$)
+
+        $$\frac{1}{\theta},\ 0<x<\theta\rightarrow\prod_{i=1}^n\frac{1}{\theta}\mathbf{1}_{(0<x_i<\theta)}\rightarrow\frac{1}{\theta^n}\mathbf{1}_{(x_{(n)}<\theta)}$$
+
+        (Il prodotto delle funzioni indicatrici vale 1 solamente se ogni $x_i$ è minore di $\theta$, in modo equivalente vale 1 solo se $\theta$ è maggiore dell'elemento massimo del campione)
+
+        Mettendo a rapporto:
+
+        \[
+            \frac{\frac{1}{\theta^n}\mathbf{1}_{(x_{(n)}<\theta)}}
+            {\frac{1}{\theta^n}\mathbf{1}_{(y_{(n)}<\theta)}}
+            =
+            \frac{\mathbf{1}_{(x_{(n)}<\theta)}}
+            {\mathbf{1}_{(y_{(n)}<\theta)}} 
+        \]
+
+        Qui l'unico caso in cui non compare $\theta$ è se la frazione equivale ad 1, cosa che succede solo se il massimo dei due campioni è lo stesso valore. Quindi $x_{(n)}$ è sufficiente minimale.
+    
+\end{itemize}
+
+\newpage
+
+\section{Stimatori}
+
+\df Uno stimatore (puntuale) è una statistica che, a partire dai valori del campione, fornisce una stima di un parametro ignoto.
+
+\subsection{MLE}
+
+Lo stimatore di massima verosimiglianza si ottiene con la seguente formula:
+
+$$\hat{\theta}_{MLE}=\arg\max_{\theta\in\Theta}\prod_{i=1}^{n} f_{\theta}(x_i)$$
+
+Spesso conviene lavorare con la versione logaritmica:
+
+$$\arg\max_{\theta\in\Theta}\sum_{i=1}^{n}\log f_{\theta}(x_i)$$
+
+\vspace{10pt}
+
+Un metodo comune per trovare il massimo è usare le derivate:
+
+$$\frac{x^{\frac{1-\theta}{\theta}}}{\theta}\rightarrow\theta^{-n}(\prod_{i=1}^{n}x_i)^{\frac{1-\theta}{\theta}}\overset{\text{log}}{\longrightarrow}-n\log{\theta}+\theta^{-1}\sum\log{x_i}-\sum\log{x_i}$$
+
+\begin{align*}
+    \frac{dl}{d\theta} &\rightarrow-\frac{n}{\theta}-\frac{\sum\log{x_i}}{\theta^2}\overset{=0}{\longrightarrow}\hat{\theta}=-\frac{\sum\log{x_i}}{n}\\
+    \frac{d^2l}{d\theta^2} &\rightarrow\frac{n}{\theta^2}+\frac{2\sum\log{x_i}}{\theta^3}\\
+    &=  \frac{n}{\theta^2}+\frac{2(-n\theta)}{\theta^3}\ \text{(nel punto critico } \sum\log{x_i}=-n\theta)\\
+    &= \frac{n}{\theta^2}\left(1+\frac{2(-n\theta)}{n\theta}\right) = -\frac{n}{\theta^2}<0\\
+\end{align*}
+
+Quindi il punto critico è un massimo e di conseguenza MLE.\newline
+
+\[
+\boxed{
+\begin{gathered}
+\textbf{N.B.\footnotemark}\quad
+\text{Per $n$ grande e sotto opportune condizioni di regolarità:}\\[0.5em]
+\hat{\theta}_{\mathrm{MLE}}
+\overset{a}{\sim}
+N\!\left(\theta_{\text{vero}},\frac{1}{nI(\theta)}\right)
+\end{gathered}
+}
+\]
+
+\footnotetext{La definizione di $I(\theta)$ è nella sezione 3.4.}
+
+\newpage
+
+\subsection{Metodo dei momenti}
+
+Dati $k$ parametri ignoti, gli stimatori dei momenti si ottengono uguagliando i momenti teorici\footnote{I momenti teorici sono riferiti alla singola variabile aleatoria $X$, non al campione.} della distribuzione con i relativi momenti campionari:
+
+\begin{align*}
+E[X] &= m_1\\
+E[X^2] &= m_2\\
+&\vdots\\
+E[X^k] &= m_k\\
+\\
+\text{Dove }m_r=\frac1n\sum_{i=1}^n X_i^r,&\qquad r=1,\dots,k.
+\end{align*}
+
+Per esempio una normale con entrambi i parametri ignoti:
+
+\begin{align*}
+    E[X]=\mu,&\qquad E[X^2]=\mu^2+\sigma^2\\
+    \bar X=\frac1n\sum_{i=1}^n X_i,&\qquad \bar X^2=\frac1n\sum_{i=1}^n X_i^2\\
+    \\
+    E[X]=m_1
+    &\longrightarrow
+    \hat\mu_{MM}=\bar X,\\
+    E[X^2]=m_2
+    &\longrightarrow
+    \mu^2+\sigma^2=\frac1n\sum_{i=1}^nX_i^2\\
+    &\longrightarrow
+    \hat\sigma^2_{MM}
+    =\frac1n\sum_{i=1}^nX_i^2-\bar X^2\ (\text{Uso $\hat\mu_{MM}$})
+\end{align*}
+
+\[
+\boxed{
+\parbox{0.85\textwidth}{
+\textbf{N.B.} Il metodo dei momenti può presentare problemi:
+
+\begin{itemize}\setlength{\itemsep}{0pt}
+    \item Per la distribuzione di Cauchy il primo momento non esiste, quindi
+    questo metodo non è applicabile;
+    
+    \item Per 
+    \[
+    \frac{1+\theta\cos x}{2\pi}
+    \]
+    si ha $E[X]=\pi$ (non compare $\theta$), bisogna quindi utilizzare un momento
+    di ordine superiore.
+\end{itemize}
+}
+}
+\]
+
+\subsection{Bayes}
+
+\df La distribuzione a priori ($\pi(\theta)$) è una distribuzione di probabilità assegnata al parametro prima di osservare i dati\footnote{Quando una distribuzione viene utilizzata come prior, la variabile generica della densità (comunemente $x$) viene indicata con il simbolo del parametro stesso.}.\newline 
+
+\df La verosimiglianza è la probabilità (o densità) del campione osservato vista come funzione del parametro: \[ L(\theta;x)=\prod_{i=1}^{n}f_\theta(x_i). \]
+
+\df La distribuzione a posteriori (posterior) è la distribuzione del parametro dopo aver osservato il campione, è data da:
+
+\[
+\pi(\theta\mid x)\propto
+L(\theta;x)\pi(\theta)
+\]\newline
+
+Per ottenere lo stimatore bayesiano si sceglie una funzione di perdita\footnote{Qui $\theta$ rappresenta il vero valore del parametro, $a$ la stima.}:
+
+\begin{itemize}
+\item \textbf{$(\theta-a)^2$} (MSE):
+
+    Lo stimatore è la media della distribuzione a posteriori;
+
+\item \textbf{$|\theta-\hat{\theta}|$}:
+
+    Lo stimatore è la mediana della distribuzione a posteriori;
+
+\item \textbf{$\arg\max_\theta \pi(\theta\mid x)$}\footnote{Per parametri discreti.}:
+
+    Lo stimatore è il valore che massimizza la posterior;
+
+\end{itemize}
+
+\vspace{6pt}
+
+Esempio:
+
+\begin{align*}
+&f(x\mid\theta)=\theta^{x}(1-\theta)^{1-x},
+\quad 0<\theta<1,\qquad
+\pi(\theta)=\frac{\Gamma(\alpha+\beta)}
+{\Gamma(\alpha)\Gamma(\beta)}
+\theta^{\alpha-1}(1-\theta)^{\beta-1}\\
+\\
+&L(\theta;x)
+=\prod_{i=1}^{n}
+\theta^{x_i}(1-\theta)^{1-x_i}=
+\theta^{\sum_{i=1}^{n}x_i}
+(1-\theta)^{\sum_{i=1}^{n}(1-x_i)}=
+\theta^{\sum_{i=1}^{n}x_i}
+(1-\theta)^{n-\sum_{i=1}^{n}x_i}\\
+\\
+&\pi(\theta\mid x)
+\propto
+\theta^{\sum x_i}
+(1-\theta)^{n-\sum x_i}
+\theta^{\alpha-1}
+(1-\theta)^{\beta-1}
+\propto
+\theta^{\alpha+\sum x_i-1}
+(1-\theta)^{\beta+n-\sum x_i-1}\\
+\\
+&\text{Che è una }\mathrm{Beta}
+\left(
+\alpha+\sum_{i=1}^{n}x_i,\,
+\beta+n-\sum_{i=1}^{n}x_i
+\right), \text{ scegliendo } MSE\rightarrow \hat{\theta}_B=\frac{\alpha+\sum_{i=1}^{n}x_i}{\alpha+\beta+n}
+\end{align*}\newline
+
+\subsection{Proprietà e teoremi vari}
+
+\df L'informazione di Fisher\footnote{Si riferisce alla singola variabile aleatoria $X$, per avere quella del campione basta moltiplicare per la taglia dello stesso.} è definita come:
+
+$$I(\theta)=E_\theta\left[\left(\frac{\partial}{\partial\theta}\log f_\theta(x)\right)^2\right]$$
+
+Oppure\footnote{Sotto opportune condizioni di regolarità e se la funzione è doppiamente differenziabile.}:
+
+$$-E_\theta\left[\frac{\partial^2}{\partial\theta^2}\log f_\theta(x)\right]$$\newline
+
+\df Lo squarto quadratico medio è definito come:
+
+$$MSE(\hat{\theta})=Var_\theta(\hat{\theta})+(E_\theta[\hat{\theta}]-\theta)^2$$\newline
+
+\df La disuguaglianza di Cramér–Rao è definita come:
+
+$$Var(\hat{\theta})\geq\frac{\left(\frac{d}{d\theta}E[\hat{\theta}]\right)^2}{nI(\theta)}$$
+
+\vspace{10pt}
+
+Alcune proprietà che può avere uno stimatore:
+\begin{itemize}
+    \item \textbf{Correttezza}\footnote{Uno stimatore corretto viene anche chiamato non distorto.}
+
+        $$E[\hat{\theta}]=\theta$$
+
+        (Per uno stimatore corretto il secondo termine di $MSE$ non compare e la parte dx di Cramér–Rao diventa $1/nI(\theta)$)
+    
+    \item \textbf{Consistenza}
+
+        $$\hat{\theta}\overset{P}{\rightarrow}\theta \text{ quando } n \rightarrow\infty$$
+    
+    \item \textbf{Efficienza}
+
+        Raggiunge il limite inferiore di Cramér–Rao ed è corretto.\newline
+    
+\end{itemize}
+
+\df Uno stimatore è detto \textbf{UMVU} se non è distorto ed ha varianza minima tra tutti gli stimatori non distorti, per ogni dal valore del parametro.
+
+\[
+\boxed{
+\textbf{N.B.}\qquad \text{Stimatore efficiente } \Rightarrow \text{ Stimatore UMVU}
+}
+\]
+
+\vspace{10pt}
+
+\begin{theorem}[Lehmann–Scheffé]
+    Se uno stimatore non è distorto ed è funzione di una statistica sufficiente e completa, allora è lo stimatore UMVU del parametro.
+\end{theorem}
+
+\begin{theorem}[Rao–Blackwell]
+    Dato uno stimatore $\hat{\theta}$ ed una statistica sufficiente $T$:
+
+    \[
+        \hat{\theta}_{RB}=E[\hat{\theta}\mid T]
+    \]
+
+    è uno stimatore per cui:
+
+    $$Var(\hat{\theta}_{RB})\leq Var(\hat{\theta}),\quad E[\hat{\theta}_{RB}]=E[\hat{\theta}]$$
+
+    \vspace{5pt}
+
+    Per il teorema di Lehmann–Scheffé si ha inoltre che se $\hat{\theta}$ è corretto e $T$ è anche completa $\ \hat{\theta}_{RB}$ è UMVU.
+    
+\end{theorem}
+
+\begin{proof}
+    $\ $\newline
+    $\ $\newline
+    Per la legge delle aspettative iterate:
+    $$E[\hat{\theta}_{RB}]=E[E[\hat{\theta}\mid T]]=E[\hat{\theta}]$$
+    Per la legge della varianza totale:
+    $$\textcolor{olive}{Var(\hat{\theta})}=E[Var(\hat{\theta}\mid T)]+Var(E[\hat{\theta}\mid T])=\textcolor{red}{E[Var(\hat{\theta}\mid T)]}+\textcolor{blue}{Var(\hat{\theta}_{RB})}$$
+    Dove \textcolor{red}{il primo termine} è maggiore o uguale a 0, quindi \textcolor{blue}{il secondo} è minore o uguale alla \textcolor{olive}{varianza di $\hat{\theta}$}.
+\end{proof}
+
+\newpage
+
+\section{Test d'ipotesi e intervalli di confidenza}
+
+\subsection{IC}
+
+\df Una quantità pivotale $(Q(X,\theta))$ è una funzione del campione e del parametro la cui distribuzione non dipende dal valore del parametro.\newline
+
+\df Un intervallo di confidenza per un parametro è un intervallo costruito partendo dal campione, tale che:
+
+\[
+P(u(X)<\theta<v(X))=\gamma
+\]
+
+\vspace{5pt}
+
+\noindent Dove $\gamma$ è detto livello di confidenza. Con un livello di confidenza del 95\%, se si ripete molte volte il campionamento e per ogni campione si costruisce un intervallo con la stessa procedura, circa il 95\% degli intervalli ottenuti conterrà il vero valore del parametro.\newline
+
+\df Il livello di significatività è definito come $\alpha=1 - \gamma$.\newline
+
+Un metodo comune per costruire questi intervalli consiste nello sfruttare le quantità pivotali, ad esempio per una normale:
+
+$$\frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\sim N(0,1),\quad \frac{\overline{X}-\mu}{S/\sqrt{n}}\sim t_{n-1},\quad \frac{(n-1)S^2}{\sigma^2}\sim\chi^2_{n-1}$$
+
+Si possono usare rispettivamente per costruire gli intervalli di:
+\begin{itemize}
+
+    \item \textbf{Media (varianza nota):}
+    
+    \[
+    \frac{\overline{X}-\mu}{\sigma/\sqrt{n}}\sim N(0,1)
+    \quad\Longrightarrow\quad
+    P\left(-z_{1-\frac{\alpha}{2}}\leq
+    \frac{\overline{X}-\mu}{\sigma/\sqrt{n}}
+    \leq z_{1-\frac{\alpha}{2}}\right)=1-\alpha
+    \]
+    
+    \[
+    \Longrightarrow\quad
+    \mu\in
+    \left(
+    \overline{X}-z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt n},
+    \overline{X}+z_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt n}
+    \right)
+    \]
+
+    \item \textbf{Media (varianza ignota):}
+    
+    \[
+    \frac{\overline{X}-\mu}{S/\sqrt{n}}\sim t_{n-1}
+    \quad\Longrightarrow\quad
+    P\left(-t_{1-\frac{\alpha}{2},n-1}\leq
+    \frac{\overline{X}-\mu}{S/\sqrt{n}}
+    \leq t_{1-\frac{\alpha}{2},n-1}\right)=1-\alpha
+    \]
+    
+    \[
+    \Longrightarrow\quad
+    \mu\in
+    \left(
+    \overline{X}-t_{1-\frac{\alpha}{2},n-1}\frac{S}{\sqrt n},
+    \overline{X}+t_{1-\frac{\alpha}{2},n-1}\frac{S}{\sqrt n}
+    \right)
+    \]
+
+    \item \textbf{Varianza:}
+    
+    \[
+    \frac{(n-1)S^2}{\sigma^2}\sim\chi^2_{n-1}
+    \quad\Longrightarrow\quad
+    P\left(
+    \chi^2_{\frac{\alpha}{2},n-1}
+    \leq
+    \frac{(n-1)S^2}{\sigma^2}
+    \leq
+    \chi^2_{1-\frac{\alpha}{2},n-1}
+    \right)=1-\alpha
+    \]
+    
+    \[
+    \Longrightarrow\quad
+    \sigma^2\in
+    \left(
+    \frac{(n-1)S^2}{\chi^2_{1-\frac{\alpha}{2},n-1}},
+    \frac{(n-1)S^2}{\chi^2_{\frac{\alpha}{2},n-1}}
+    \right)
+    \]\newline
+
+\end{itemize}
+
+Esempi:
+\begin{itemize}
+
+    \item \textbf{Media:}
+
+    \[
+        \overline{X}=12,\qquad n=100,\qquad S=4,\qquad \alpha=0.05,\qquad \sigma=4
+    \]
+
+    \begin{itemize}
+
+    \item \textbf{Varianza nota:}
+
+    \[
+    z_{1-\frac{\alpha}{2}}=z_{0.975}=1.96\rightarrow
+    12\pm1.96\frac{4}{\sqrt{100}}
+    =
+    12\pm0.784
+    \]
+
+    \[
+    IC_{95\%}=(11.216,\;12.784)
+    \]
+
+
+    \item \textbf{Varianza ignota:}
+
+    Ipotizziamo $S=4$
+
+    \[
+    t_{1-\frac{\alpha}{2},n-1}
+    =
+    t_{0.975,99}
+    \approx1.984\rightarrow
+    12\pm1.984\frac{4}{\sqrt{100}}
+    =
+    12\pm0.794
+    \]
+
+    \[
+    IC_{95\%}=(11.206,\;12.794)
+    \]
+
+    \end{itemize}
+
+
+    \item \textbf{Varianza:}
+
+    \[
+    S^2=9,\qquad n=20,\qquad \alpha=0.05
+    \]
+
+    \[
+    \chi^2_{0.975,19}=32.852,
+    \quad
+    \chi^2_{0.025,19}=8.907\rightarrow
+    \left(
+    \frac{19\cdot9}{32.852},
+    \frac{19\cdot9}{8.907}
+    \right)
+    \]
+
+    \[
+    IC_{95\%}=(5.20,\;19.20)
+    \]
+
+\end{itemize}
+
+\subsection{Test}
+
+\df Un test d'ipotesi è una procedura che permette di decidere, basandosi sul campione, se rifiutare una certa ipotesi sul parametro. Si hanno 2 ipotesi:
+\begin{itemize}
+    \item $H_0$ (ipotesi nulla, si considera vera fino a prova contraria)
+    
+    \item $H_1$ (ipotesi alternativa)
+    
+\end{itemize}
+
+
+\[
+    \Theta=\Theta_0 \cup \Theta_1,\quad \Theta_0=\{\theta\in\Theta\mid H_0\text{ è vera}\},\quad \Theta_1=\{\theta\in\Theta\mid H_1\text{ è vera}\}
+\]
+
+\vspace{8pt}
+
+\df La regione critica ($C$) è l'insieme di valori della statistica di test per cui $H_0$ viene rifiutata.\newline
+
+\df La funzione di potenza è la probabilità di rifiutare $H_0$ al variare del parametro.
+
+\[
+P_\theta(T(X)\in C)
+\]\newline
+
+\df L'errore di I specie consiste nel rifiutare $H_0$ quando essa è vera\footnote{$\alpha$ è il livello di significatività.}:
+
+\[
+\sup_{\theta\in\Theta_0}P_\theta(T(X)\in C)\leq\alpha
+\]\newline
+
+\df L'errore di II specie consiste nel non rifiutare $H_0$ quando essa è falsa:
+
+\[
+\beta
+=
+P_\theta(T(X)\notin C)
+\qquad
+\theta\in\Theta_1.
+\]\newline
+
+\df La potenza del test è $1-\beta$.\newline
+
+\[
+\boxed{\alpha\downarrow\ \Rightarrow\beta\uparrow\ \Rightarrow\text{ Potenza test}\downarrow}
+\]\newline
+
+\df Un test di livello $\alpha$ è \textbf{MP} se, tra tutti i test dello stesso livello, ha la funzione di potenza massima per un valore fissato $\theta_1\in\Theta_1$.\newline
+
+\df Un test di livello $\alpha$ è \textbf{UMP} se, tra tutti i test dello stesso livello, ha la funzione di potenza massima per ogni $\theta\in\Theta_1$.\newpage
+
+Tipi di test:
+\begin{itemize}
+    \item \textbf{Test bilaterale:}
+    \[
+    H_0:\theta=\theta_0,
+    \qquad
+    H_1:\theta\neq\theta_0
+    \]
+    La regione critica è divisa in due code della distribuzione.
+
+    \item \textbf{Test unilaterale destro:}
+    \[
+    H_0:\theta\leq\theta_0,
+    \qquad
+    H_1:\theta>\theta_0
+    \]
+    La regione critica si trova nella coda destra della distribuzione.
+
+    \item \textbf{Test unilaterale sinistro:}
+    \[
+    H_0:\theta\geq\theta_0,
+    \qquad
+    H_1:\theta<\theta_0
+    \]
+    La regione critica si trova nella coda sinistra della distribuzione.\newline
+\end{itemize}
+
+\begin{lemma}[Neyman-Pearson]
+Per  due ipotesi semplici $H_0:\theta=\theta_0,\ H_1:\theta=\theta_1$ il test che rifiuta $(H_0)$ quando:
+
+\[
+\Lambda(X)=\frac{L(\theta_0;X)}{L(\theta_1;X)}\leq k\quad
+\text{dove $k$ è  tale che }
+P_{\theta_0}(\Lambda(X)\leq k)=\alpha
+\]
+
+è MP.\newline
+\end{lemma}
+
+Esempi:
+\begin{itemize}
+    \item Un'azienda dichiara che il peso medio delle confezioni è di $500$ g, si sospetta però che il peso medio sia maggiore.
+
+    
+Da un campione di $n=36$ confezioni si ottiene $
+\bar X=504,\ \sigma=12$. Si vuole un test con $\alpha=0.05$
+
+\[
+H_0:\mu\leq500,
+\qquad
+H_1:\mu>500.
+\]
+
+Essendo la varianza nota, si può usare:
+
+\begin{align*}
+Z&=\frac{\bar X-\mu_0}{\sigma/\sqrt n}=\frac{504-500}{12/\sqrt{36}}
+=
+\frac{4}{2}
+=
+2 \\
+\\
+C&=\{Z>z_{1-\alpha}\}=\{Z>1.645\}=\{2>1.645\}\rightarrow\text{ Rifiuto }H_0
+\end{align*}
+
+\item Si vuole verificare se il tempo medio di consegna di un servizio sia diverso
+da $30$ minuti.
+
+Da un campione di $n=16$ osservazioni si ottiene $\bar X=32,\
+S=5$. Si vuole un test con $\alpha=0.05$
+
+\[
+H_0:\mu=30,
+\qquad
+H_1:\mu\neq30.
+\]
+
+La varianza è ignota, quindi si usa:
+
+\begin{align*}
+T&=\frac{\bar X-\mu_0}{S/\sqrt n}=
+\frac{32-30}{5/\sqrt{16}}
+=
+\frac{2}{1.25}
+=
+1.6
+\\\\
+C&=
+\{|T|>t_{15,1-\alpha/2}\}=\{|T|>2.131\}=\{|1.6|>2.131\}\rightarrow\text{ Non rifiuto }H_0
+\end{align*}
+
+\item Si presume una deviazione standard $\sigma_0=4$.
+
+
+Da un campione normale di dimensione $n=20$ si ottiene $S^2=25$. Si vuole un test con $\alpha=0.05$
+
+\[
+H_0:\sigma^2=16,
+\qquad
+H_1:\sigma^2\neq16.
+\]
+
+\begin{align*}
+\chi^2&=
+\frac{(n-1)S^2}{\sigma_0^2}=
+\frac{19\cdot25}{16}
+=
+29.69
+\\
+\\
+C&=
+\{\chi^2<\chi^2_{19,0.025}\}
+\cup
+\{\chi^2>\chi^2_{19,0.975}\}=\{\chi^2<8.907\}\cup\{\chi^2>32.852\}\rightarrow\text{ Non rifiuto }H_0
+\end{align*}
+
+\item Ho $(1-\theta)^{x-1}\theta$, dato un campione di taglia 1 $(x=4)$ e una significatività del $5\%$:
+
+$$H_0:\theta<1\%\ ?$$
+
+Questa è una distribuzione geometrica, più cresce $\theta$ meno prove dovrò fare per avere un successo. Quindi $C=\{x\leq c\}$.
+
+\begin{align*}
+    \sup_{\theta\leq0.01}P_\theta(X\leq c)&=P_{0.01}(X\leq c)\leq0.05\qquad(P_p(X\geq c+1)=(1-p)^c)\\
+    &=1-(1-0.01)^c\leq0.05\rightarrow1-0.99^c\leq0.05\\
+    &\rightarrow0.99^c\geq0.95\rightarrow c\leq\frac{\ln0.95}{\ln0.99}\rightarrow c\leq5.12\rightarrow c=5
+\end{align*}
+
+Quindi $C=\{x\leq5\}$, rifiuto $H_0$.
+
+\item Una moneta viene lanciata $10$ volte. Si vuole verificare se la moneta è equa. (Significatività del $5\%$)
+
+\[
+H_0:p=0.5,
+\qquad
+H_1:p=0.8.
+\]
+
+Uso il lemma di Neyman-Pearson.
+
+\begin{align*}
+&
+\frac{\binom{10}{x}(0.5)^x(0.5)^{10-x}}
+{\binom{10}{x}(0.8)^x(0.2)^{10-x}}=
+\\
+&=
+\frac{(0.5)^{10}}
+{(0.8)^x(0.2)^{10-x}}=
+\\
+&=
+\left(\frac{0.5}{0.8}\right)^x
+\left(\frac{0.5}{0.2}\right)^{10-x}=
+\\
+&=
+(0.625)^x(2.5)^{10-x}.
+\end{align*}
+
+\[
+P_{0.5}(X\geq k)\leq0.05\ \text{ (Il rapporto decresce rispetto ad $x$)}
+\]
+
+\begin{align*}
+P_{0.5}(X\geq9)
+&=
+P(X=9)+P(X=10)
+\\
+&=
+\binom{10}{9}(0.5)^{10}
++
+\binom{10}{10}(0.5)^{10}
+\\
+&=
+\frac{10+1}{1024}=
+0.0107<0.05
+\end{align*}
+
+\[
+P_{0.5}(X\geq8)
+=
+\frac{45+10+1}{1024}
+=
+0.0547>0.05.
+\]
+
+Quindi $C=\{X\geq9\}$.
+
+\end{itemize}
+
+\[
+\fbox{%
+\begin{minipage}{0.85\textwidth}
+Si noti come esiste una correlazione con gli intervalli di confidenza. Nel terzo esempio, costruendo un intervallo di confidenza con livello
+\(1-\alpha = 95\%\), si ottiene
+\[
+(14.46,\;52.78)
+\]
+che contiene il valore \(16\), ossia il valore ipotizzato sotto \(H_0\).
+
+Questo non è un caso: gli intervalli di confidenza contengono esattamente i valori del parametro per i quali il corrispondente test d'ipotesi non rifiuta \(H_0\).
+\end{minipage}%
+}
+\]
+
+\vspace{7pt}
+
+\df Il p-value è un valore che misura quanto i dati osservati siano compatibili con l'ipotesi nulla: un valore piccolo indica che il risultato osservato è poco plausibile se $H_0$ fosse vera.
+
+
+\section{\texorpdfstring{Test $\chi^2$}{Chi-quadro}}
+
+\subsection{Bontà di adattamento}
+
+\df Una variabile categorica è una variabile che assume valori rappresentati da categorie, utilizzate per classificare le osservazioni in gruppi distinti.\newline
+
+Data una variabile con $k$ categorie e un campione di
+dimensione $n$, si vuole testare:
+
+\[
+H_0:
+(O_1,\ldots,O_k)\sim
+\operatorname{Mult}(n,p_1,\ldots,p_k)\text{ (con $O_i$ osservazioni della categoria $i$)}
+\]\newline
+
+La statistica usata è: $$
+\sum_{i=1}^{k}
+\frac{(O_i-E[X_i])^2}{E[X_i]}\overset{\text{a}}{\sim}\chi^2_{k-m-1} \text{ ($m$ è il numero di parametri da stimare e }E[X_i]=np_i)
+$$
+
+La convergenza vale sotto $H_0$, per $n$ grande e se $\forall i\ E[X_i]\geq5$.\newline
+
+\[
+\text{La regione critica è:}
+\left\{
+\text{Valore statistica}>
+\chi^2_{1-\alpha,k-m-1}
+\right\}
+\]\newline
+
+Esempio (5\%):
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|c|c}
+        $O_1$ & $O_2$ & $O_3$\\
+        \hline
+        10 & 68 & 112\\
+    \end{tabular}
+\end{table}
+
+Con ($p_1=(1-\theta)^2,\ p_2=2\theta(1-\theta),\ p_3=\theta^2$):
+
+\vspace{8pt}
+
+\[
+L=
+\frac{190!}{10!\,68!\,112!}
+((1-\theta)^2)^{10}
+(2\theta(1-\theta))^{68}
+(\theta^2)^{112}
+\]
+
+\[
+\frac{d l}{d\theta}=0
+\quad\longrightarrow\quad
+\hat\theta=
+\frac{68+2(112)}{2\cdot190}
+=0.768
+\]
+
+\vspace{8pt}
+
+\[
+\begin{aligned}
+E_1 &= 190(1-0.768)^2 \approx 10.18,\\
+E_2 &= 190\bigl(2\cdot0.768(1-0.768)\bigr) \approx 67.68,\\
+E_3 &= 190(0.768)^2 \approx 112.14
+\end{aligned}
+\]
+
+\vspace{8pt}
+
+$$\frac{(10-10.18)^2}{10.18}+\frac{(68-67.68)^2}{67.68}+\frac{(112-112.14)^2}{112.14}\approx0.005$$
+
+\vspace{7pt}
+
+$$\chi^2_{0.95,1}=3.84>0.005\rightarrow\text{ Non rifiuto $H_0$}$$
+
+\subsection{Indipendenza}
+
+\df Una tabella di contingenza è una tabella a doppia entrata che riporta le frequenze congiunte di due (o più) variabili categoriche, mostrando quante osservazioni appartengono a ciascuna combinazione di categorie.\newline
+
+Date due variabili categoriche, inserite in una tabella con $r$ righe e $c$ colonne. Si vuole testare:
+
+\[
+H_0:\text{ le due variabili sono indipendenti}
+\]\newline
+
+La statistica del test è:
+
+$$
+X^2=
+\sum_{i=1}^{r}
+\sum_{j=1}^{c}
+\frac{(O_{ij}-E_{ij})^2}{E_{ij}}
+\overset{\text{a}}{\sim}
+\chi^2_{(r-1)(c-1)}
+$$$$
+\left(\text{con $O_{ij}$ frequenza osservata nella cella $(i,j)$}
+\text{ e }E_{ij}=
+\frac{(\text{totale riga }i)(\text{totale colonna }j)}{n}\right)
+$$\newline
+
+Valgono gli stessi criteri del test precedente per la convergenza.\newline
+
+\[
+\text{La regione critica è:}
+\left\{
+\text{Valore statistica}>
+\chi^2_{1-\alpha,(r-1)(c-1)}
+\right\}
+\]\newline
+
+Esempio (10\%):
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|c|c|c|c}
+        \diagbox{$A$}{$B$} & $B_1$ & $B_2$ & $B_3$ & Tot.\\
+        \hline
+        $A_1$ & 15 & 23 & 10 & 48\\
+         \hline
+        $A_2$ & 25 & 19 & 8 & 52\\
+         \hline
+        Tot. & 40 & 42 & 18 & 100\\
+    \end{tabular}
+\end{table}
+
+\[
+\begin{aligned}
+E_{11}&=\frac{48\cdot40}{100}=19.2, &
+E_{12}&=\frac{48\cdot42}{100}=20.16, &
+E_{13}&=\frac{48\cdot18}{100}=8.64,\\
+E_{21}&=\frac{52\cdot40}{100}=20.8, &
+E_{22}&=\frac{52\cdot42}{100}=21.84, &
+E_{23}&=\frac{52\cdot18}{100}=9.36.
+\end{aligned}
+\]
+
+\vspace{8pt}
+
+\[
+\begin{aligned}
+\frac{(15-19.2)^2}{19.2}
++\frac{(23-20.16)^2}{20.16}
++\frac{(10-8.64)^2}{8.64}+
+\frac{(25-20.8)^2}{20.8}
++\frac{(19-21.84)^2}{21.84}
++\frac{(8-9.36)^2}{9.36}
+\approx2.66
+\end{aligned}
+\]
+
+\vspace{8pt}
+
+\[
+\chi^2_{0.90,2}
+=
+4.61
+>
+2.66\rightarrow\text{ Non rifiuto $H_0$}
+\]
+
+\section{ANOVA a una via}
+
+Assumendo:
+\begin{itemize}
+    \item campioni indipendenti;
+    \item normalità delle popolazioni;
+    \item omoschedasticità (uguaglianza delle varianze);\newline
+\end{itemize}
+
+Si vuole testare:
+
+\[
+H_0:\mu_1=\mu_2=\cdots=\mu_k
+\]
+
+La statistica del test è:
+
+$$
+\scalebox{1.5}{$
+\frac{
+\frac{\sum_{i=1}^{k} n_i(\bar X_i-\bar X)^2}{k-1}
+}{
+\frac{\sum_{i=1}^{k}\sum_{j=1}^{n_i}(X_{ij}-\bar X_i)^2}{n-k}
+}
+$}
+\overset{H_0}{\sim}
+F_{k-1,n-k}
+$$
+$$
+(\text{con }n_i=\text{numerosità del gruppo }i, \ \bar X_i\text{ media del gruppo }i, \ \bar X\text{ media generale})
+$$
+
+\[
+\text{La regione critica è:}
+\left\{
+\text{Valore statistica}>
+F_{1-\alpha,k-1,n-k}
+\right\}
+\]\newline
+
+Esempio (5\%):
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c|cccc}
+     & $G_1$ & $G_2$ & $G_3$ & $G_4$ \\
+    \hline
+    1&279&378&172&381\\
+    2&338&275&335&346\\
+    3&334&412&335&340\\
+    4&198&265&282&471\\
+    5&303&286&250&318
+    \end{tabular}
+\end{table}
+
+\[
+\begin{aligned}
+\bar X_1&=\frac{279+338+334+198+303}{5}=290.4\\
+\bar X_2&=\frac{378+275+412+265+286}{5}=323.2\\
+\bar X_3&=\frac{172+335+335+282+250}{5}=274.8\\
+\bar X_4&=\frac{381+346+340+471+318}{5}=371.2\\
+\bar X&=
+\frac{1}{20}
+\sum_{i=1}^{4}\sum_{j=1}^{5}X_{ij}
+=314.9
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+SS_B=
+\sum_{i=1}^{4}n_i(\bar X_i-\bar X)^2&=
+5[(290.4-314.9)^2+(323.2-314.9)^2\\ &+(274.8-314.9)^2+(371.2-314.9)^2]
+\approx27234.20\\
+SS_W
+=
+\sum_{i=1}^{4}
+\sum_{j=1}^{5}
+(X_{ij}-\bar X_i)^2&\approx63953.60
+\end{aligned}
+\]
+
+\[
+\frac{MS_B}{MS_W}
+=\frac{SS_B/3}{SS_W/16}=
+\frac{9078.07}{3997.10}
+\approx2.27
+\]
+
+$$F_{0.95,3,16}\approx3.24>2.27\rightarrow\text{ Non rifiuto $H_0$}
+$$
+
+\section{Algoritmo EM}
+
+\df L'algoritmo EM (Expectation-Maximization) è un metodo utilizzato per stimare i parametri di un modello quando sono presenti dati incompleti o variabili latenti.
+
+Si vuole massimizzare la verosimiglianza dei dati osservati, ma la variabile latente rende difficile massimizzare direttamente, si considera quindi la verosimiglianza completa:
+
+\[
+L_c(\theta|X,Z)=p(X,Z|\theta)\ (X\text{ dati osservati},\
+Z \text{ dati latenti},\
+\theta\text{ parametri})
+\]
+
+\vspace{10pt}
+
+L'algoritmo procede alternando due passi:
+
+\[
+\boxed{\text{E-step}\qquad Q(\theta|\theta^{(t)})
+=
+E_{Z|X,\theta^{(t)}}
+[\log p(X,Z|\theta)]}
+\]
+
+\[
+\boxed{\text{M-step}\qquad\theta^{(t+1)}
+=
+\arg\max_{\theta}
+Q(\theta|\theta^{(t)})}
+\]\newline
+
+Fino a convergere:\footnote{La convergenza può essere verso un massimo locale, quindi la soluzione dipende dalla scelta iniziale $\theta^{(0)}$.}
+
+\[
+|\theta^{(t+1)}-\theta^{(t)}|<\varepsilon.
+\]\newline
+
+È garantito che ad ogni iterazione la verosimiglianza osservata non diminuisca:
+
+\[
+L(\theta^{(t+1)}|X)\geq L(\theta^{(t)}|X).
+\]
+
+\end{document}
