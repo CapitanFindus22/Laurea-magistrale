@@ -30,7 +30,7 @@ layers = [
     reluLayer
     maxPooling2dLayer(2, "Stride", 2)
 
-    convolution2dLayer(3, 16, ...
+    convolution2dLayer(5, 16, ...
         "WeightsInitializer","he")
     batchNormalizationLayer
     reluLayer
