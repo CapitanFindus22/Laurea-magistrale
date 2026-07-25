@@ -76,4 +76,4 @@ options = trainingOptions("sgdm", ...
 net = trainNetwork(imgsTrain, layers, options);
 
 %% Salvataggio
-save('rete4.mat', 'net', 'options', 'layers');
+save('rete5.mat', 'net', 'options', 'layers');
