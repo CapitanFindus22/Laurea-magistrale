@@ -85,8 +85,8 @@ kernel = {
         dtype=np.float32,
     )
     / 9,
-    "Mot_d": np.array(
-        [  # Motion blur diagonale \
+    "D": np.array(
+        [  # \
             [1, 0, 0, 0, 0],
             [0, 1, 0, 0, 0],
             [0, 0, 1, 0, 0],
@@ -96,8 +96,8 @@ kernel = {
         dtype=np.float32,
     )
     / 5,
-    "Mot_h": np.array(
-        [  # Motion blur orizzontale -
+    "H": np.array(
+        [  # —
             [0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0],
             [1, 1, 1, 1, 1],
@@ -107,8 +107,8 @@ kernel = {
         dtype=np.float32,
     )
     / 5,
-    "Mot_v": np.array(
-        [  # Motion blur verticale |
+    "V": np.array(
+        [  # |
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
