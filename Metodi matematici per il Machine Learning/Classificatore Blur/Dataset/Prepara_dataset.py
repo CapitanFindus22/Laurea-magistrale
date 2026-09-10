@@ -118,11 +118,11 @@ kernel = {
         dtype=np.float32,
     )
     / 5,
-    "Median_5": None,  # Blur tramite mediana (bonus)
+    "Median_5": None,  # Blur tramite mediana 
     "Originale": None, # Nessun cambiamento
 }
 
-# Controllo kernel
+# Controllo kernel (la somma deve essere 1)
 # for name, ker in kernel.items():
 #    if ker is not None:
 #        print(f"{name:10} -> {ker.sum():.6f}")
