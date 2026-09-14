@@ -1,0 +1,2343 @@
+\documentclass{article}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amssymb}
+\usepackage[stable]{footmisc}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
+
+\newtheorem{theorem}{Teorema}
+
+\allowdisplaybreaks
+
+\newcommand{\df}{\noindent\textbf{Definizione} }
+
+\newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+
+\title{Metodi matematici per il Machine Learning}
+\author{Leonardo Ganzaroli}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\hypersetup{allcolors=black}
+
+\section{Capitolo I\footnote{I capitoli in numeri romani fanno riferimento a ``Linear Algebra and Learning from Data'' di G. Strang.}}
+
+\subsection{Prodotti e spazi}
+
+\subsubsection{\texorpdfstring{Matrice $\times$ Vettore}{Matrice x Vettore}}
+
+La moltiplicazione di una matrice per un vettore si può fare con 2 procedimenti:
+
+\begin{align*}
+Ax=
+\begin{bmatrix}
+    2 & 3 \\ 
+    2 & 4 \\
+    3 & 7
+\end{bmatrix}
+\begin{bmatrix}
+    x_1 \\ 
+    x_2  \\
+\end{bmatrix}
+&=
+\begin{bmatrix}
+    2x_1 + 3x_2 \\ 
+    2x_1 + 4x_2 \\
+    3x_1 + 7x_2
+\end{bmatrix}
+\qquad(\text{Prodotto scalare})
+\\
+\\
+&=
+x_1
+\begin{bmatrix}
+    2  \\ 
+    2  \\
+    3 
+\end{bmatrix}
++x_2
+\begin{bmatrix}
+    3 \\ 
+    4 \\
+    7
+\end{bmatrix}
+\ (\text{Combinazione lineare delle colonne})
+\end{align*}
+
+\vspace{8pt}
+
+\df Lo spazio delle colonne di una matrice è l'insieme di tutte le combinazioni lineari delle sue colonne:
+
+\[
+\operatorname{C}(A)=\operatorname{span}\{a_1,\ldots,a_n\}
+\]
+
+\vspace{5pt}
+
+Quindi $b\in\operatorname{C}(A) \iff Ax=b$ ha almeno una soluzione.\newline
+
+\df Un insieme di colonne è detto linearmente indipendente se l'unica combinazione che produce il vettore nullo è quella in cui tutti coefficienti sono pari a 0. \newline
+
+\df Le colonne linearmente indipendenti di una matrice costituiscono la base dello spazio delle colonne.\newline
+
+\df Il rango di una matrice è il numero di colonne linearmente indipendenti.\newline
+
+\df Creando la matrice $C$ con le colonne indipendenti di una matrice $A$ posso costruire una seconda matrice tale che $CR=A$:
+
+\[
+A=
+\begin{bmatrix}
+    1 & 3 & 8\\ 
+    1 & 2 & 6 \\
+    0 & 1 & 2
+\end{bmatrix}
+=
+\overset{C}{
+\begin{bmatrix}
+    1 & 3\\ 
+    1 & 2\\
+    0 & 1 
+\end{bmatrix}}
+\overset{R}{
+\begin{bmatrix}
+    1 & 0 & 2\\ 
+    0 & 1 & 2\\
+\end{bmatrix}}
+\]
+
+\vspace{6pt}
+
+Le righe di $R$ rappresentano una base per lo spazio delle righe di $A$.
+
+\vspace{5pt}
+
+\begin{theorem}
+    Il numero di colonne indipendenti è uguale a quello di righe indipendenti.
+\end{theorem}
+
+\subsubsection{\texorpdfstring{Matrice $\times$ Matrice}{Matrice x Matrice}}
+
+La situazione è analoga per il prodotto tra 2 matrici:
+
+\begin{align*}
+\begin{bmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{bmatrix}
+\begin{bmatrix}
+b_{11} & b_{12} \\
+b_{21} & b_{22}
+\end{bmatrix}&=
+\begin{bmatrix}
+a_{11}b_{11}+a_{12}b_{21} &
+a_{11}b_{12}+a_{12}b_{22}
+\\
+a_{21}b_{11}+a_{22}b_{21} &
+a_{21}b_{12}+a_{22}b_{22}
+\end{bmatrix}
+\quad(\text{Prodotto riga-colonna})
+\\[1em]
+&=
+\begin{bmatrix}
+a_{11}\\
+a_{21}
+\end{bmatrix}
+\begin{bmatrix}
+b_{11} & b_{12}
+\end{bmatrix}
++
+\begin{bmatrix}
+a_{12}\\
+a_{22}
+\end{bmatrix}
+\begin{bmatrix}
+b_{21} & b_{22}
+\end{bmatrix}
+\quad(\text{Somma di prodotti colonna-riga})
+\end{align*}\newline
+
+Nel secondo caso un singolo elemento della somma è $uv^T$ che risulta essere una matrice $(m\times p)$. Dato che le colonne di questa sono multipli di $u$ e le righe a loro volta sono multipli di $v^T$, si ha $\operatorname{Rank}(uv^T)=1$ (se $u\neq0$ e $v\neq0$).\newline
+
+Prendendo $CR$ dall'esempio precedente:
+
+\[
+\begin{bmatrix}
+    1 & 3\\ 
+    1 & 2\\
+    0 & 1 
+\end{bmatrix}
+\begin{bmatrix}
+    1 & 0 & 2\\ 
+    0 & 1 & 2\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+1\\
+1\\
+0
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & 2
+\end{bmatrix}
++
+\begin{bmatrix}
+3\\
+2\\
+1
+\end{bmatrix}
+\begin{bmatrix}
+0 & 1 & 2
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & 2\\
+1 & 0 & 2\\
+0 & 0 & 0
+\end{bmatrix}
++
+\begin{bmatrix}
+0 & 3 & 6\\
+0 & 2 & 4\\
+0 & 1 & 2
+\end{bmatrix}
+\]\newline
+
+\df Una matrice è simmetrica ($S$) se: $S^T=S$.\newline
+
+\df Una matrice è ortogonale ($Q$) se: $Q^T=Q^{-1}$.\newline
+
+Alcune fattorizzazioni importanti:
+\begin{itemize}
+    \item $A=LU$
+    \item $A=QR$
+    \item $A=X\Lambda X^{-1}$
+    \item $S=Q\Lambda Q^T$
+    \item $A=U\Sigma V^T$
+\end{itemize}\newpage
+
+\subsubsection{Sottospazi}
+
+\df Un sottospazio vettoriale di uno spazio vettoriale è un sottoinsieme di questo che è a sua volta uno spazio vettoriale, cioè è chiuso rispetto alla somma di vettori e al prodotto per uno scalare. Uno spazio è sempre sottospazio di sé stesso.\newline
+
+
+Oltre a quello delle righe e quello delle colonne una matrice $A_{m\times n}$ definisce altri 2 sottospazi:
+\begin{enumerate}
+    \item \textbf{Nullo}
+
+        \[
+            N(A)
+            =
+            \{x\in\mathbb{R}^n:Ax=0\}
+        \]
+    
+    \item \textbf{Nullo sx}
+
+        \[
+            N(A^T)
+            =
+            \{y\in\mathbb{R}^m:A^Ty=0\}
+        \]\newline
+    
+\end{enumerate}
+
+\begin{theorem}
+    \[
+        \text{Se ho }A\in\mathbb{R}^{m\times n}\text{ di rango $r$ allora:}
+    \]
+    \[
+        \dim(C(A))=r,\
+        \dim(C(A^T))=r,\
+        \dim(N(A))=n-r,\
+        \dim(N(A^T))=m-r
+    \]\newline
+
+\end{theorem}
+
+Per matrici compatibili valgono le seguenti proprietà:
+
+\[
+\operatorname{Rank}(AB)
+\le
+\operatorname{Rank}(A)
+\]
+
+\[
+\operatorname{Rank}(AB)
+\le
+\operatorname{Rank}(B)
+\]
+
+\[
+\operatorname{Rank}(A+B)
+\le
+\operatorname{Rank}(A)+\operatorname{Rank}(B)
+\]
+
+\[
+\operatorname{Rank}(A^TA)
+=
+\operatorname{Rank}(A)
+=
+\operatorname{Rank}(AA^T)
+\]
+
+\[
+\operatorname{Rank}(A)
+=
+\operatorname{Rank}(A^T)
+\]\newpage
+
+\subsection{\texorpdfstring{Eliminazione e $A=LU$}{A=LU}}
+
+\df Una matrice quadrata è triangolare superiore se tutti gli elementi sotto la diagonale principale sono 0, equivalentemente è triangolare inferiore se tutti gli elementi sopra la diagonale principale sono 0.\newline 
+
+\df Una matrice di permutazione \(P\) è una matrice quadrata che in ogni e riga e colonna ha un solo 1, mentre tutti gli altri elementi sono 0.\newline
+
+Il sistema:
+
+\[
+\begin{cases}
+a_{11}x_1+a_{12}x_2+\cdots+a_{1n}x_n=b_1\\
+a_{21}x_1+a_{22}x_2+\cdots+a_{2n}x_n=b_2\\
+\hspace{2.8cm}\vdots\\
+a_{m1}x_1+a_{m2}x_2+\cdots+a_{mn}x_n=b_m
+\end{cases}
+\]
+
+può essere riscritto come $Ax=b$, dove:
+
+\[
+A=
+\begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n}\\
+a_{21} & a_{22} & \cdots & a_{2n}\\
+\vdots & \vdots & \ddots & \vdots\\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{bmatrix},
+\qquad
+x=
+\begin{bmatrix}
+x_1\\
+x_2\\
+\vdots\\
+x_n
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+b_1\\
+b_2\\
+\vdots\\
+b_m
+\end{bmatrix}
+\]\newline
+
+\df L'eliminazione di Gauss è un algoritmo che applica operazioni elementari tra righe alla matrice $A$ trasformandola in una triangolare superiore U. In ogni passo si sceglie un elemento (pivot) che elimina gli elementi sottostanti nella sua colonna. Nel caso $Ax=b$, le stesse operazioni vengono applicate anche a $b$, ottenendo un sistema equivalente più semplice da risolvere.\newline
+
+A questo punto creando la matrice triangolare inferiore $L$ con i coefficienti moltiplicativi usati nel procedimento si ottiene la fattorizzazione $LU$. Se durante l'eliminazione un pivot è nullo (o troppo piccolo), si possono scambiare 2 righe con una matrice di permutazione, in questo caso la fattorizzazione diventa $PA=LU$.\newline
+
+Esempio:
+
+\begin{align*}
+    &\begin{bmatrix}
+        2 & 1 & -1\\
+        4 & 3 & -1\\
+        -2 & 2 & 3
+    \end{bmatrix}\\
+    &\text{Primo pivot: }a_{1,1}\rightarrow m_{2,1}=\frac{4}{2}=2,\ m_{3,1}=\frac{-2}{2}=-1\\
+    &R_2=R_2-2R_1,\ R_3=R_3+R_1\\\\\\
+    &\begin{bmatrix}
+        2 & 1 & -1\\
+        0 & 1 & 1\\
+        0 & 3 & 2
+    \end{bmatrix}\\
+    &\text{Secondo pivot: }a_{2,2}\rightarrow m_{3,2}=\frac{3}{1}=3\\
+    &R_3=R_3-3R_2\\
+    \\
+    &U=\begin{bmatrix}
+        2 & 1 & -1\\
+        0 & 1 & 1\\
+        0 & 0 & -1
+    \end{bmatrix},\quad L=
+    \begin{bmatrix}
+        1 & 0 & 0\\
+        2 & 1 & 0\\
+        -1 & 3 & 1
+    \end{bmatrix}
+\end{align*}\newline
+
+Esempio con permutazione:
+
+\begin{align*}
+    \\
+    \begin{bmatrix}
+        0 & 2 & 1\\
+        1 & 3 & 2\\
+        2 & 1 & 1
+    \end{bmatrix}\rightarrow
+    \begin{bmatrix}
+        0 & 0 & 1\\
+        0 & 1 & 0\\
+        1 & 0 & 0
+    \end{bmatrix}&
+    \begin{bmatrix}
+        0 & 2 & 1\\
+        1 & 3 & 2\\
+        2 & 1 & 1
+    \end{bmatrix}=
+    \begin{bmatrix}
+        2 & 1 & 1\\
+        1 & 3 & 2\\
+        0 & 2 & 1
+    \end{bmatrix}
+    \\
+    &\vdots
+    \\
+    &\vdots
+    \\
+    &\vdots
+    \\
+    U=\begin{bmatrix}
+        2 & 1 & 1\\
+        0 & \frac{5}{2} & \frac{3}{2}\\
+        0 & 0 & -\frac{1}{5}
+    \end{bmatrix},\quad &L=
+    \begin{bmatrix}
+        1 & 0 & 0\\
+        \frac{1}{2} & 1 & 0\\
+        0 & \frac{4}{5} & 1
+    \end{bmatrix}  
+\end{align*}
+
+\newpage
+
+\subsection{Ortogonalità}
+
+\begin{itemize}
+    \item Due vettori $x,y$ sono ortogonali se $x^Ty=\sum_{i=1}^{n}x_i y_i=0$;
+    \item Una base $\{v_1,\ldots,v_n\}$ è ortogonale se $v_i^Tv_j=0 \ \ \forall i\neq j$, se i vettori sono anche unitari la base è detta ortonormale;
+    \item Due sottospazi $R$ e $N$ sono ortogonali se $r^Tn=0\ \ \forall\ r\in R,\ n\in N$.\newline
+\end{itemize}
+
+Data una base ortonormale $[q_1,\ldots,q_n]$, si può scrivere ogni vettore come:
+
+\[
+v=c_1q_1+\cdots+c_nq_n\quad \text{dove }c_i=q_i^Tv
+\]\newline
+
+\df Una matrice di proiezione ($P$) è una matrice quadrata tale che $P=P^2$, se vale $P=P^2=P^T$ allora è ortogonale.\newline
+
+\df Una matrice di rotazione di angolo $\theta$ è:
+
+\[
+\begin{bmatrix}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{bmatrix}
+\]\newline
+
+\df Una matrice di riflessione si può ottenere da una matrice di rotazione moltiplicando una delle colonne (o una delle righe) per -1.\newline
+
+\df La matrice di Householder è definita come $H = I - 2uu^T$ con $u$ unitario.\newline
+
+\df L'ortogonalizzazione di Gram-Schmidt è un procedimento con cui si trasforma un insieme di vettori linearmente indipendenti $\{v_1, v_2, \dots, v_n\}$ in un insieme di vettori ortogonali:
+
+\[
+u_1 = v_1
+\]
+
+per $k = 2, \dots, n$:
+
+\[
+u_k = v_k - \sum_{i=1}^{k-1} \frac{\langle v_k, u_i \rangle}
+{\langle u_i, u_i \rangle}
+\,u_i\qquad\langle v_k, u_i \rangle\text{ è il prodotto scalare}
+\]\newpage
+
+\subsection{Autovalori e autovettori}
+
+\subsubsection{Teoria}
+
+\df Un vettore non nullo $x$ è un autovettore di $A$ se esiste uno scalare $\lambda$ (detto autovalore) tale che:
+
+\[
+Ax=\lambda x
+\]
+
+Si ha:
+\begin{itemize}
+    \item $A^kx=\lambda^k x\text{ per }k=1,2,3,\ldots$
+    \item $A^{-1}x=\frac{1}{\lambda}x \text{ se }\lambda\neq0$\newline
+\end{itemize}
+
+Data una base di autovettori $[x_1,\ldots,x_n]$, si può scrivere ogni vettore come:
+
+\[
+v=c_1x_1+\cdots+c_nx_n
+\]
+
+ed il prodotto $Av$ come:
+
+\[
+c_1\lambda_1x_1+\cdots+c_n\lambda_nx_n.
+\]\newline
+
+\df La traccia di una matrice quadrata ($tr()$) è la somma degli elementi della diagonale principale.\newline
+
+Alcune proprietà:
+\begin{itemize}
+    \item Per una matrice quadrata:
+        \begin{itemize}
+            \item $\sum_i\lambda_i=\operatorname{tr}(A)$;
+            \item $\prod_i\lambda_i=\det(A)$.
+        \end{itemize}
+    \item Per una matrice simmetrica:
+        \begin{itemize}
+            \item tutti gli autovalori sono reali;
+            \item autovettori associati ad autovalori distinti sono ortogonali.
+        \end{itemize}
+     \item $\lambda_1\neq\lambda_2\Rightarrow x_1\cdot x_2=0$
+     \item $A$ e $BAB^{-1}$ hanno gli stessi autovalori
+\end{itemize}\newpage
+
+\subsubsection{Calcolo e diagonalizzazione}
+
+Gli autovalori della matrice sono le radici del polinomio caratteristico:
+
+$$\det(A-\lambda I)=0$$
+
+Una volta trovati ne prendo uno alla volta e risolvo:
+
+\[
+(A-\lambda_i I)x=0
+\]
+
+dove qualunque soluzione non nulla è un autovettore associato.\newline
+
+\df La molteplicità algebrica è il numero di volte che l'autovalore compare come radice del polinomio caratteristico.\newline
+
+\df La molteplicità geometrica è il numero di autovettori linearmente indipendenti associati all'autovalore.\newline
+
+Vale sempre geometrica $\leq$ algebrica.\newline
+
+\df Data una matrice $A$ con $n$ autovettori linearmente indipendenti, costruisco:
+
+\[
+X=
+[x_1,\ldots,x_n],\
+\Lambda=
+\operatorname{diag}(\lambda_1,\ldots,\lambda_n)
+\]
+
+\vspace{5pt}
+
+con cui posso diagonalizzare $A$:
+
+\[
+A=X\Lambda X^{-1}
+\]\newline
+
+Vale:
+
+\[
+A^k
+=
+X\Lambda^kX^{-1}\text{ con }
+\Lambda^k
+=
+\operatorname{diag}
+(\lambda_1^k,\ldots,\lambda_n^k)
+\]\newline
+
+Una matrice è diagonalizzabile se possiede $n$ autovettori linearmente indipendenti.\newline
+
+Se esiste un autovalore per cui geometrica $<$ algebrica la matrice non è diagonalizzabile.\newpage
+
+Esempio:
+
+\[
+A=
+\begin{bmatrix}
+4 & 1 & 0\\
+0 & 2 & 0\\
+0 & 0 & 3
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+Il polinomio caratteristico è:
+
+\[
+\det(A-\lambda I)=
+\begin{bmatrix}
+4-\lambda & 1 & 0\\
+0 & 2-\lambda & 0\\
+0 & 0 & 3-\lambda
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+Essendo triangolare:
+$$\det(A-\lambda I)
+=(4-\lambda)(2-\lambda)(3-\lambda)\text{ con }\lambda_1=4,\
+\lambda_2=2,\
+\lambda_3=3$$
+
+Per $\lambda_1=4$:
+
+\[
+(A-4I)x=0\rightarrow
+\begin{bmatrix}
+0 & 1 & 0\\
+0 & -2 & 0\\
+0 & 0 & -1
+\end{bmatrix}
+\begin{bmatrix}
+x\\y\\z
+\end{bmatrix}
+=
+\begin{bmatrix}
+0\\0\\0
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+Da cui ricavo ($y=0,\ z=0$) quindi un autovettore è:
+
+\[
+v_1=
+\begin{bmatrix}
+1\\0\\0
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+Procedendo in modo analogo per gli altri 2:
+
+\[
+v_2=
+\begin{bmatrix}
+1\\-2\\0
+\end{bmatrix},\
+v_3=
+\begin{bmatrix}
+0\\0\\1
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+Costruisco le 2 matrici:
+
+\[
+P=
+\begin{bmatrix}
+1 & 1 & 0\\
+0 & -2 & 0\\
+0 & 0 & 1
+\end{bmatrix},\
+D=
+\begin{bmatrix}
+4 & 0 & 0\\
+0 & 2 & 0\\
+0 & 0 & 3
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+Gli autovettori sono linearmente indipendenti quindi posso diagonalizzare:
+
+\[
+    A=
+    \begin{bmatrix}
+        1 & 1 & 0\\
+        0 & -2 & 0\\
+        0 & 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        4 & 0 & 0\\
+        0 & 2 & 0\\
+        0 & 0 & 3
+    \end{bmatrix}
+    \begin{bmatrix}
+        1 & \frac{1}{2} & 0\\
+        0 & -\frac{1}{2} & 0\\
+        0 & 0 & 1
+    \end{bmatrix}
+\]
+
+\subsection{Matrici Simmetriche Definite Positive}
+
+\df Una matrice simmetrica è detta definita positiva se tutti i suoi autovalori sono positivi, se uno o più autovalori sono pari a 0 è detta semidefinita positiva.\newline
+
+\df Un minore di una matrice $A$ è il determinante di una sottomatrice quadrata ottenibile da 
+$A$ eliminando alcune righe e/o colonne della stessa, se gli insiemi degli indici delle righe eliminate coincide con quello delle colonne è detto minore principale.\newline
+
+Sono equivalenti le seguenti proprietà:
+
+\begin{enumerate}
+    \item Tutti gli autovalori sono positivi;
+    \item $x^TSx>0\quad \forall x\neq0$;
+    \item Tutti i minori principali $D_1,D_2,\ldots,D_n$
+    sono positivi;
+    \item Tutti i pivot dell'eliminazione di Gauss sono positivi.\newline
+\end{enumerate}
+
+
+Se $S$ è definita positiva $x^TSx=1$ descrive un'ellisse i cui assi principali, di lunghezza $\frac1{\sqrt{\lambda_i}}$, coincidono con gli autovettori della matrice.\newline
+
+\df La matrice Hessiana è una matrice quadrata che raccoglie le derivate parziali seconde di una funzione scalare di più variabili:
+
+\[
+H_f(x)=
+\begin{bmatrix}
+\frac{\partial^2 f}{\partial x_1^2} &
+\cdots &
+\frac{\partial^2 f}{\partial x_1\partial x_n} \\
+\vdots & \ddots & \vdots \\
+\frac{\partial^2 f}{\partial x_n\partial x_1} &
+\cdots &
+\frac{\partial^2 f}{\partial x_n^2}
+\end{bmatrix}
+\]\newline
+
+\df Il gradiente di una funzione scalare è il vettore delle derivate parziali prime:
+
+\[
+\nabla f(x)=
+\begin{bmatrix}
+\displaystyle \frac{\partial f}{\partial x_1} \\[0.4em]
+\vdots \\
+\displaystyle \frac{\partial f}{\partial x_n}
+\end{bmatrix}
+\]
+
+esso individua la direzione di massima crescita della funzione.\newline
+
+Per una funzione $f(x)$ un punto critico soddisfa $\nabla f(x)=0$, se la matrice Hessiana in quel punto è definita positiva, allora è un minimo locale.
+
+\subsection{Norme}
+
+\df Una norma ($||\cdot||$) è una funzione che associa ad ogni vettore (o matrice) un numero reale non negativo con le seguenti proprietà:
+
+\begin{enumerate}
+    \item \textbf{Positività}
+    \[
+    \|x\|\ge 0,
+    \
+    \|x\|=0
+    \iff
+    x=0
+    \]
+
+    \item \textbf{Omogeneità}
+    \[
+    \|\alpha x\|
+    =
+    |\alpha|\,\|x\|,
+    \
+    \forall \alpha\in\mathbb{R}
+    \]
+
+    \item \textbf{Disuguaglianza triangolare}
+    \[
+    \|x+y\|
+    \le
+    \|x\|+\|y\|
+    \]\newline
+\end{enumerate}
+
+\begin{description}
+    \item[Norma Euclidea (\texorpdfstring{\(\ell_2\)}{l2})] 
+
+    \[
+    \|x\|_2
+    =
+    \sqrt{\sum_{i=1}^{n}x_i^2}
+    \]
+
+    \item [Norma \texorpdfstring{\(\ell_1\)}{l1}]
+
+    \[
+    \|x\|_1
+    =
+    \sum_{i=1}^{n}|x_i|
+    \]
+
+    \item [Norma \texorpdfstring{\(\ell_\infty\)}{linf}]
+
+    \[
+    \|x\|_\infty
+    =
+    \max_i |x_i|
+    \]
+
+    \item [Norma \texorpdfstring{\(\ell_p\)}{lp}]
+
+    \[
+    \|x\|_p
+    =
+    \left(
+    \sum_{i=1}^{n}|x_i|^p
+    \right)^{1/p}
+    \
+    1\le p<\infty
+    \]\newline
+    
+\end{description}
+
+
+\df Una norma matriciale si può definire come:
+
+\[
+\|A\|
+=
+\max_{x\neq0}
+\frac{\|Ax\|}{\|x\|}
+\]
+
+\vspace{5pt}
+
+Da cui seguono $\|Ax\|
+\le
+\|A\|\,\|x\|$ e $
+\|AB\|
+\le
+\|A\|\,\|B\|.
+$
+
+\newpage
+
+\begin{description}
+    \item[Norma spettrale\footnotemark] 
+
+    \[
+    \|A\|_2=\sigma_1
+    \]
+    
+    \item[Norma \texorpdfstring{\(\ell_1\)}{l1}] 
+
+    \[
+    \|A\|_1
+    =
+    \max_j
+    \sum_i |a_{ij}|
+    \]
+    
+    \item[Norma \texorpdfstring{\(\ell_\infty\)}{linf}] 
+
+    \[
+    \|A\|_\infty
+    =
+    \max_i
+    \sum_j |a_{ij}|
+    \]
+
+    \item[Norma \texorpdfstring{\(\ell_N\)\footnotemark[2]}{ln}] 
+
+    \[
+    \|A\|_N
+    =
+    \sum_{i=1}^{n}\sigma_i
+    \]
+
+    \item[Norma \texorpdfstring{\(\ell_F\)\footnotemark[2]}{lf}] 
+
+    \[
+    \|A\|_F
+    =
+    \sqrt{\sum_{i=1}^{n}\sigma_i^2}
+    \]\newline
+    
+\end{description}
+
+Esempi:
+
+\[
+x=
+\begin{bmatrix}
+1\\
+-2\\
+2
+\end{bmatrix},\
+A=
+\begin{bmatrix}
+1&2\\
+3&4
+\end{bmatrix}
+\]
+
+\begin{align*}
+&\|x\|_1
+=
+|1|+|-2|+|2|
+=
+5
+\\
+&\|x\|_2
+=
+\sqrt{1^2+(-2)^2+2^2}
+=
+3
+\\
+&\|x\|_\infty
+=
+2
+\\
+&\|x\|_p
+=
+(1^3+2^3+2^3)^{1/3}
+=
+17^{1/3}
+\text{ (con }p=3)
+\\
+\\
+&\|A\|_1
+=
+|2|+|4|=6
+\\
+&\|A\|_\infty
+=
+|3|+|4|=7
+\end{align*}
+
+\footnotetext{$\ \sigma_i$ è l'$i$-esimo valore singolare, vedere la prossima sezione.}
+
+\newpage
+
+\subsection{SVD}
+
+Data una matrice $A_{m\times n}$ di rango $r$, esistono:
+\begin{itemize}
+    \item $n$ vettori singolari dx $[v_1,v_2,\ldots]$
+
+        (Autovettori normalizzati\footnote{Rispetto alla norma euclidea.} di $A^TA$)
+    
+    \item $m$ vettori singolari sx $[u_1,u_2,\ldots]$
+
+        (Autovettori normalizzati\footnotemark[3] di $AA^T$)
+    
+    \item $r$ valori singolari $[\sigma_1,\sigma_2,\ldots]$
+
+        (Radici quadrate degli autovalori di $A^TA$)\newline
+    
+\end{itemize}
+
+
+Raggruppandoli in 3 matrici:
+
+\[
+U=[u_1,\ldots,u_m],
+\
+V=[v_1,\ldots,v_n],\
+\Sigma=
+\begin{bmatrix}
+\sigma_1        &        & 0\\
+                 &\ddots  & \\
+0                &        &\sigma_r
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+Si ottiene la Decomposizione ai valori singolari: $A=U\Sigma V^T$.\newline
+
+Questa fattorizzazione permette di scrivere ogni matrice come somma di matrici di rango uno:
+
+\[
+A=
+\sum_{i=1}^{r}
+\sigma_i u_iv_i^T.
+\]
+
+\vspace{5pt}
+
+Dove i contributi sono ordinati per importanza $\sigma_1\ge\sigma_2\ge\cdots\ge\sigma_r$.\newline
+
+\begin{theorem}[Eckart-Young]
+    Troncando la somma ai primi $k$ termini si ottiene \(A_k\) che rappresenta la migliore approssimazione di rango \(k\) della matrice \(A\) rispetto alla norma spettrale.\newline
+\end{theorem}
+
+Se \(A\) è simmetrica definita positiva $U=V$ e i valori singolari coincidono con gli autovalori.\newpage
+
+Esempio:
+
+\[
+A=
+\begin{bmatrix}
+3 & 0\\
+4 & 5
+\end{bmatrix}\rightarrow
+A^T=
+\begin{bmatrix}
+3 & 4\\
+0 & 5
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+\[
+A^T A=
+\begin{bmatrix}
+3 & 4\\
+0 & 5
+\end{bmatrix}
+\begin{bmatrix}
+3 & 0\\
+4 & 5
+\end{bmatrix}
+=
+\begin{bmatrix}
+25 & 20\\
+20 & 25
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+\[
+A A^T=
+\begin{bmatrix}
+3 & 0\\
+4 & 5
+\end{bmatrix}
+\begin{bmatrix}
+3 & 4\\
+0 & 5
+\end{bmatrix}
+=
+\begin{bmatrix}
+9 & 12\\
+12 & 41
+\end{bmatrix}
+\]
+
+\vspace{5pt}
+
+\(A^T A\) ha $\lambda_1=45,
+\
+\lambda_2=5
+$ con $v_1=\frac{1}{\sqrt2}
+\begin{bmatrix}
+1\\
+1
+\end{bmatrix},
+\
+v_2=\frac{1}{\sqrt2}
+\begin{bmatrix}
+1\\
+-1
+\end{bmatrix}$
+
+\vspace{5pt}
+
+\(A A^T\) ha $
+u_1=
+\frac{1}{\sqrt{10}}
+\begin{bmatrix}
+1\\
+3
+\end{bmatrix},
+\
+u_2=
+\frac{1}{\sqrt{10}}
+\begin{bmatrix}
+3\\
+-1
+\end{bmatrix}
+$
+
+\textbf{}
+
+Quindi:
+
+\[
+A=
+\begin{bmatrix}
+\frac{1}{\sqrt{10}} & \frac{3}{\sqrt{10}}\\
+\frac{3}{\sqrt{10}} & -\frac{1}{\sqrt{10}}
+\end{bmatrix}
+\begin{bmatrix}
+\sqrt{45} & 0\\
+0 & \sqrt{5}
+\end{bmatrix}
+\begin{bmatrix}
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}\\
+\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}}
+\end{bmatrix}
+\]
+
+\[
+=
+\sqrt{45}
+\begin{bmatrix}
+\frac{1}{\sqrt{10}}\\
+\frac{3}{\sqrt{10}}
+\end{bmatrix}
+\begin{bmatrix}
+\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}
+\end{bmatrix}
++
+\sqrt{5}
+\begin{bmatrix}
+\frac{3}{\sqrt{10}}\\
+-\frac{1}{\sqrt{10}}
+\end{bmatrix}
+\begin{bmatrix}
+\frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}}
+\end{bmatrix}
+\]
+
+\newpage
+
+\subsection{Analisi dei componenti principali}
+
+\df Una matrice di dati in cui una riga è una variabile e una colonna un'osservazione è detta centrata se ad ogni riga viene sottratta la media della stessa.\newline
+
+\df Per $A$ centrata, la matrice di covarianza è definita come:
+
+$$\frac{1}{n-1}AA^T$$
+
+\vspace{5pt}
+
+che è simmetrica e semidefinita positiva.\newline
+
+La varianza totale del dataset è la somma degli autovalori della matrice di covarianza.\newline
+
+\df La PCA è una tecnica di riduzione della dimensionalità che sfrutta la SVD per rappresentare un insieme di dati con un numero ridotto di variabili, preservando la maggior parte dell'informazione contenuta nel dataset.\newline
+
+Applicando la SVD ad una matrice centrata si ha che:
+\begin{itemize}
+    \item le colonne di \(U\) sono le componenti principali;
+    \item gli autovettori della matrice di covarianza coincidono con le componenti principali;
+    \item i valori singolari misurano l'importanza delle rispettive componenti;
+    \item gli autovalori della matrice di covarianza sono $\lambda_i=\frac{\sigma_i^2}{n-1}$;
+    \item le colonne di \(V\) descrivono le coordinate delle osservazioni nel nuovo sistema di riferimento.\newline
+\end{itemize}
+
+La prima componente principale individua la direzione lungo la quale i dati presentano la massima variabilità, la seconda è ortogonale alla prima e descrive la massima variabilità residua, ecc\ldots
+
+\newpage
+
+\section{Capitolo II}
+
+\subsection{Minimi quadrati}
+
+\df Data la SVD di $A$, definisco $A^+=V\Sigma^+U^T$ ($\Sigma^+$ si ottiene trasponendo $\Sigma$ ed elevando tutti i suoi elementi non nulli a -1) come la pseudoinversa di Moore-Penrose.\newline
+
+Il sistema $Ax=b$ potrebbe non avere una soluzione esatta poiché $b$ potrebbe non appartenere allo spazio delle colonne di $A$. In questo caso l'obiettivo è trovare il vettore $x$ che minimizza $\|Ax-b\|_2^2$.\newline
+
+\df Il vettore $e=b-Ax$ è detto residuo.\newline
+
+Per trovare $x$ esistono diversi metodi:
+\begin{itemize}
+    \item $x=A^+b$
+    \item  $x=(A^TA)^{-1}A^Tb$ (Se le colonne di A sono linearmente indipendenti)
+    \item $x_\delta=(A^TA+\delta^2I)^{-1}A^Tb$ (Se $A^TA$ non è invertibile), quando $\delta\rightarrow0$ $ x_\delta\rightarrow A^+b$
+    \item Se $A=QR$ (dove $Q$ ha colonne ortonormali e $R$ è triangolare superiore) $x=R^{-1}Q^Tb$
+
+    Un metodo per trovare $QR$ è quello di Gram-Schmidt, partendo dalle colonne di $A$:
+
+        \[
+            q_1=\frac{a_1}{\|a_1\|}, \ \
+            u_k=a_k-\sum_{i=1}^{k-1}(a_k^Tq_i)\,q_i,\ \
+            q_k=\frac{u_k}{\|u_k\|},\ \
+            r_{ij}=q_i^Ta_j
+        \]\newpage
+    
+\end{itemize}
+
+\section{Capitolo III}
+
+\subsection{\texorpdfstring{$\Delta A\rightarrow \Delta A^{-1}$}{Cambiamenti in A inversa dati da cambiamenti in A}}
+
+\df\footnote{Per una perturbazione del tipo \(A+UV^T\), si ottiene la formula analoga invertendo i segni visibili.} Data $M=A-UV^T$ con \(A\in\mathbb{R}^{n\times n}\) invertibile e
+\(U,V\in\mathbb{R}^{n\times k}\). Se \(I-V^TA^{-1}U\) è invertibile si definisce la formula di Sherman-Morrison-Woodbury come:
+
+\[
+(A-UV^T)^{-1}
+=
+A^{-1}
++
+A^{-1}U
+(I-V^TA^{-1}U)^{-1}
+V^TA^{-1}
+\]
+
+\vspace{8pt}
+
+Se \(k=1\), \(U=u,V=v\in\mathbb{R}^n\) e \(1-v^TA^{-1}u\neq0\), si ricava la formula di
+Sherman-Morrison:
+
+\[
+(A-uv^T)^{-1}
+=
+A^{-1}
++
+\frac{A^{-1}uv^TA^{-1}}{1-v^TA^{-1}u}.
+\]\newline
+
+Se si conosce $A^{-1}$ entrambe permettono di aggiornare direttamente l'inversa senza doverla ricalcolare da zero. Il costo passa da $O(n^3)$ a $O(n^2k+k^3)$ e risulta conveniente quando $k\ll n$.\newline 
+
+Esempio Sherman-Morrison:
+
+\[
+A=A^{-1}=I,\ 
+u=\begin{bmatrix}1\\2\end{bmatrix},
+\
+v=\begin{bmatrix}3\\1\end{bmatrix}
+\]
+
+\[
+M^{-1}
+=
+I+\frac{uv^T}{1-v^Tu}
+=
+I-\frac14
+\begin{bmatrix}
+3&1\\
+6&2
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac14 &-\frac14\\
+-\frac32&\frac12
+\end{bmatrix}
+\]
+
+\vspace{8pt}
+
+Esempio Sherman-Morrison-Woodbury:
+
+\[
+A=
+\begin{bmatrix}
+2&0\\
+0&3
+\end{bmatrix},\
+A^{-1}=
+\begin{bmatrix}
+\frac12&0\\
+0&\frac13
+\end{bmatrix},
+\
+U=V=
+\begin{bmatrix}
+1&0\\
+0&1
+\end{bmatrix}
+\]
+
+\[
+(I_2-V^TA^{-1}U)^{-1}
+=
+\begin{bmatrix}
+2&0\\
+0&\frac32
+\end{bmatrix}
+\]
+
+\[
+M^{-1}
+=
+A^{-1}
++
+A^{-1}U
+(I_2-V^TA^{-1}U)^{-1}
+V^TA^{-1}
+=
+\begin{bmatrix}
+1&0\\
+0&\frac12
+\end{bmatrix}
+\]\newline
+
+Se ho già risolto $A^TAx=A^Tb$ ed arriva una nuova osservazione $r^Tx=b_{m+1}$ la nuova matrice diventa $A^TA+r^Tr$ e dato che $r^Tr$ ha rango 1 la sua inversa si può aggiornare tramite Sherman-Morrison. 
+
+
+\subsection{\texorpdfstring{Splitting \(\ell_1+\ell_2\)}{split l1 + l2}}
+
+\df Per trovare una soluzione sparsa di $Ax=b$ basta trovare $x$ per cui la norma $\ell_1$ è minima, questo metodo è detto Basis Pursuit.\newline  
+
+\df Un altro metodo è LASSO, la cui formulazione è: \[ \min_x \frac12\|Ax-b\|_2^2 + \lambda \|x\|_1 \]\newline
+
+
+In generale molti problemi si possono scrivere come:
+
+\[ \min_u F_1(u)+F_2(u) \] 
+
+dove $F_1$ contiene termini di tipo $\ell_1$ e $F_2$ di tipo $\ell_2$. I 2 però hanno caratteristiche differenti, quindi l'idea è quella di alternare i passi.\newline
+
+Per LASSO la separazione si fa introducendo una variabile ausiliaria $z$:
+
+\[
+\min_{x,z} \frac12\|Ax-b\|_2^2+\lambda\|z\|_1\text{ con il vincolo }x=z
+\]\newline
+
+Il problema si risolve poi con ADMM\footnote{Vedere Capitolo 2.} (Alternating Direction Method of Multipliers) che alterna:
+\begin{enumerate}
+    \item La parte $\ell_2$
+
+            \[
+            x^{k+1}=(A^TA+pI)^{-1}(A^Tb+p(z^k-u^k))
+            \]
+
+    \item La parte $\ell_1$
+
+            \[
+            z^{k+1}=S_{\lambda/p}(x^{k+1}+u^k)\ \text{ con }S_\lambda(v)=\mathrm{sign}(v)\max(|v|-\lambda,0)
+            \]
+    
+\end{enumerate}
+
+
+E combina i risultati:
+
+\[
+u^{k+1}=u^k+x^{k+1}-z^{k+1}
+\]\newpage
+
+\section{Capitolo VI}
+
+\subsection{Problemi di minimo e convessità}
+
+\df Un insieme $K$ è convesso se il segmento che unisce due punti dell'insieme appartiene ancora all'insieme.\newline
+
+
+\df Una funzione $F$ è convessa se:
+
+\[
+F(\theta x+(1-\theta)y)
+\le
+\theta F(x)+(1-\theta)F(y)\quad 0<\theta<1
+\]
+
+\vspace{5pt}
+
+Se la disuguaglianza è stretta la funzione è strettamente convessa.\newline
+
+La convessità garantisce che:
+
+\begin{itemize}
+    \item ogni minimo locale è globale;
+    \item l'insieme delle soluzioni è convesso;
+    \item non possono esistere due minimi locali isolati.\newline
+\end{itemize}
+
+Per trovare un possibile punto di minimo si può applicare il metodo di Newton in modo iterativo:
+
+\[
+x_{k+1}=x_k-H_f(x_k)^{-1}\nabla f(x_k)
+\]\newline
+
+\df La matrice Jacobiana $J$ è una matrice che raccoglie le derivate parziali di una funzione vettoriale:
+
+\[
+J(x)=
+\begin{bmatrix}
+\frac{\partial f_1}{\partial x_1} &
+\cdots &
+\frac{\partial f_1}{\partial x_n} \\
+\vdots & \ddots & \vdots \\
+\frac{\partial f_m}{\partial x_1} &
+\cdots &
+\frac{\partial f_m}{\partial x_n}
+\end{bmatrix}
+\]\newline
+
+Per problemi di minimi quadrati non lineari si usa l'algoritmo di Levenberg-Marquardt:
+
+\[
+p_{k+1}=p_k-(J^TJ+\lambda I)^{-1}
+J^T(y-\hat y)
+\]
+
+\vspace{7pt}
+
+Per $\lambda\rightarrow0$ coincide con il metodo di Gauss-Newton.
+
+\subsection{Moltiplicatori di Lagrange}
+
+\df Per trovare il minimo in presenza di vincoli (espressi come $A^Tx=b$), si introducono i moltiplicatori $\lambda$ e si definisce la lagrangiana come:
+
+\[
+L(x,\lambda)
+=
+F(x)+\lambda^T(A^Tx-b)
+\]
+
+\vspace{5pt}
+
+La soluzione si ottiene imponendo:
+
+\[
+\nabla_x L = 0,
+\
+\nabla_\lambda L = 0
+\]
+
+\vspace{5pt}
+
+e mettendo tutte le equazioni ottenute a sistema.\newline
+
+Esempio:
+
+\[
+F(x,y)=x^2+y^2\text{ con }x+y=1
+\]
+
+\[
+L(x,y,\lambda)=x^2+y^2+\lambda(x+y-1)
+\]
+
+\[
+\frac{\partial L}{\partial x}=2x+\lambda=0,\
+\frac{\partial L}{\partial y}=2y+\lambda=0,\
+\frac{\partial L}{\partial \lambda}=x+y-1=0
+\]
+
+\[
+\begin{cases}
+    2x+\lambda=0\\
+    2y+\lambda=0\\
+    x+y-1=0
+\end{cases}
+\rightarrow
+\begin{cases}
+    2x=-\lambda\\
+    2y=-\lambda\\
+    x+y=1
+\end{cases}
+\rightarrow
+\begin{cases}
+    2x=2y\\
+    x+y=1
+\end{cases}
+\rightarrow
+\begin{cases}
+    x=y\\
+    x+y=1
+\end{cases}
+\rightarrow
+\left(\frac{1}{2},\frac{1}{2}\right)
+\]
+
+\[
+F\left(\frac12,\frac12\right)
+=
+\frac14+\frac14
+=
+\frac12
+\]\newpage
+
+\subsection{Discesa del gradiente}
+
+Per trovare il minimo di una funzione differenziabile si può sfruttare il gradiente:
+
+\[
+x_{k+1}=x_k-s_k\nabla f(x_k)
+\]
+
+\vspace{5pt}
+
+Dato che il gradiente punta nella direzione di massima crescita della funzione andando nella direzione opposta si ha la direzione di massima discesa. Non è tuttavia assicurato che si arrivi al punto di minimo globale.\newline
+
+Per scegliere \(s_k\) in modo ottimale si usa l'exact line search:
+
+\[
+s_k
+=
+\arg\min_{s\ge0}
+f\!\left(x_k-s\nabla f(x_k)\right)
+\]
+
+che risulta tuttavia molto costoso nella pratica, infatti solitamente si usano metodi di scelta approssimati o valori prefissati.\newline
+
+Per accelerare la convergenza si può usare il Momentum, che tiene traccia delle direzioni precedenti:
+
+\[
+x_{k+1}=x_k-sz_k\text{ con }z_k=\nabla f(x_k)+\beta z_{k-1}\quad (0\le\beta<1)
+\]\newline
+
+Una variante di quest'ultimo è l'accelerazione di Nesterov:
+
+\[
+x_{k+1}
+=
+x_k
++
+\beta(x_k-x_{k-1})
+-
+s
+\nabla f
+\left(
+x_k+\gamma(x_k-x_{k-1})
+\right)
+\]\newline
+
+Per ridurre il costo computazionale si può usare una versione stocastica della discesa (SGD) in cui si usa una stima del gradiente.\newline 
+
+Un'estensione di SGD è ADAM:
+
+\[
+x_{k+1}
+=
+x_k
+-
+\alpha
+\frac{\hat m_k}
+{\sqrt{\hat v_k}+\varepsilon}\text{ con }
+\hat m_k=\frac{\beta_1m_{k-1}+(1-\beta_1)\nabla f(x_k)}{1-\beta_1^k},\
+\hat v_k=\frac{\beta_2v_{k-1}+(1-\beta_2)\nabla f(x_k)^2}{1-\beta_2^k}
+\]
+
+\newpage
+
+\section{Capitolo 2\footnote{Questo capitolo fa riferimento a ``Distributed Optimization and Statistical Learning via the Alternating Direction Method of Multipliers'' di AA.VV.}}
+
+Data:
+
+$$
+L(x,y)=f(x)+y^T(Ax-b)
+$$
+
+\vspace{5pt}
+
+dove si vuole minimizzare $f(x)$, la funzione duale è:
+
+$$
+g(y)=\inf_x L(x,y)
+$$
+
+e il problema duale è massimizzare $g(y)$.\newline
+
+Un metodo di risoluzione di questo problema è il Dual Ascent:
+
+\begin{align*}
+x^{k+1} &= \arg\min_x L(x,y^k)\\
+y^{k+1} &= y^k+\alpha_k(Ax^{k+1}-b)\qquad (\alpha_k>0)
+\end{align*}
+
+\vspace{5pt}
+
+che converge sotto opportune ipotesi.\newline
+
+Un miglioramento è il Method of Multipliers\footnote{ADMM è una variante di questo metodo.}:
+
+\begin{align*}
+L_\rho(x,y)&=f(x)+y^T(Ax-b)+\frac \rho2\|Ax-b\|_2^2\qquad (\rho>0)\\
+x^{k+1} &= \arg\min_x L_\rho(x,y^k)\\
+y^{k+1} &= y^k+\rho(Ax^{k+1}-b)\qquad 
+\end{align*}\newline
+
+Se la funzione obiettivo è separabile, lo è anche la Lagrangiana:
+
+$$
+f(x)=\sum_{i=1}^{N}f_i(x_i)\rightarrow L(x,y)=\sum_{i=1}^{N}L_i(x_i,y)
+$$
+
+$$
+x_i^{k+1}=\arg\min_{x_i}L_i(x_i,y^k),\ y^{k+1}=y^k+\alpha_k(Ax^{k+1}-b)
+$$
+
+\vspace{5pt}
+
+Questa formulazione è detta Dual Decomposition e permette di risolvere i sottoproblemi in modo indipendente.
+
+\section{Regressione}
+
+Dato un insieme di dati $D=\{(x_i,y_i)\}_{i=1}^{n}$ si vuole trovare una funzione che li approssimi.\newline
+
+Assumendo una relazione lineare tra i dati si ha:
+
+\[
+\hat{y}_i=b_0+b_1x_i
+\]
+
+\vspace{5pt}
+
+Dove i parametri si scelgono in modo da minimizzare la differenza tra
+dati reali e predetti, normalmente tramite MSE:
+
+\[
+\frac1n \sum_{i=1}^n(y_i-\hat y_i)^2
+\]
+
+\vspace{5pt}
+
+Nel caso più generale si usa la versione polinomiale:
+
+\[
+\hat{y}=\sum_{k=0}^{d} b_kx^k \text{ con $d$ grado del polinomio}
+\]\newline
+
+Un altro tipo di regressione è quella logistica che viene usata quando i valori assumibili da $y$ sono discreti, nel caso binario:
+
+\[
+\hat{y}_i=\sigma(b_0+b_1x_i+\ldots)
+\text{ con }
+\sigma(z)=\frac{1}{1+e^{-z}}
+\]
+
+\vspace{5pt}
+
+Il valore ottenuto è una probabilità, scegliendo una soglia si può decidere la classe:
+
+\[
+\hat{y}_i=
+\begin{cases}
+1 & \text{se } \hat{y}_i\geq c,\\
+0 & \text{altrimenti}
+\end{cases}
+\]
+
+\vspace{5pt}
+
+La funzione da minimizzare in questo caso è la Cross-Entropy (binaria):
+
+\[
+-\frac1n\sum_{i=1}^{n}
+\left[
+y_i\log(\hat{y}_i)
++(1-y_i)\log(1-\hat{y}_i)
+\right]
+\]
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Deep Learning}
+
+\subsection{Reti neurali}
+
+\df Un neurone artificiale è una funzione che dà in output una combinazione lineare dei suoi input, a cui si aggiunge un bias:
+
+\[
+\sigma(a^Tv+b)
+\]
+
+dove
+
+\begin{itemize}
+    \item $a$ è il vettore dei pesi;
+    \item $v$ è il vettore di input;
+    \item $b$ è il vettore dei bias;
+    \item $\sigma$ è detta funzione di attivazione.\newline
+\end{itemize}
+
+\df Un layer è costituito da molti neuroni che elaborano parallelamente lo stesso vettore di ingresso, indicando con $v^{(\ell-1)}$ l'ingresso del layer $\ell$:
+\[
+v^{(\ell)}
+=
+\sigma(A^{(\ell)}v^{(\ell-1)}+
+b^{(\ell)})
+\]
+
+dove $A$ è la matrice dei pesi.
+
+\vspace{5pt}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[
+        >=stealth,
+        neuron/.style={circle, draw, minimum size=10mm},
+        input/.style={font=\bfseries}
+    ]
+    
+    % Input
+    \node[input, red]   (I1) at (0,2) {IN\_1};
+    \node[input, blue]  (I2) at (0,1) {IN\_2};
+    \node[input, green!70!black] (I3) at (0,0) {IN\_3};
+    
+    % Neuroni
+    \node[neuron] (N1) at (4,2) {};
+    \node[neuron] (N2) at (4,1) {};
+    \node[neuron] (N3) at (4,0) {};
+    
+    % Output
+    \node[right=1.5cm of N1] (O1) {OUT\_1};
+    \node[right=1.5cm of N2] (O2) {OUT\_2};
+    \node[right=1.5cm of N3] (O3) {OUT\_3};
+    
+    % Collegamenti dagli input ai neuroni
+    \foreach \N in {N1,N2,N3}
+        \draw[->,red] (I1) -- (\N);
+    
+    \foreach \N in {N1,N2,N3}
+        \draw[->,blue] (I2) -- (\N);
+    
+    \foreach \N in {N1,N2,N3}
+        \draw[->,green!70!black] (I3) -- (\N);
+    
+    % Collegamenti neuroni -> output
+    \draw[->] (N1) -- (O1);
+    \draw[->] (N2) -- (O2);
+    \draw[->] (N3) -- (O3);
+    
+    % Didascalia
+    \node at (4,-1) {Esempio di layer con 3 neuroni};
+    
+    \end{tikzpicture}
+\end{figure}
+
+\vspace{5pt}
+
+Mettendo più layer in sequenza si ottiene una rete neurale profonda:
+
+\[
+v^{(0)}
+\rightarrow
+v^{(1)}
+\rightarrow
+\cdots
+\rightarrow
+v^{(L)}
+=
+y
+\]
+
+\vspace{5pt}
+
+La rete è quindi una funzione parametrica $y=f(v,X)$ con $X$ insieme di pesi e bias della rete. Il valore $y$ rappresenta una predizione che viene usata in una funzione di costo $C$ per capire quanto si è lontani dal valore reale. L'obiettivo principale è fare in modo che questa distanza sia minima, per fare ciò si usa la discesa del gradiente $X_{k+1}=X_k-\eta\nabla C(X_k)$. Il calcolo del gradiente e l'aggiornamento dei pesi si fa tramite Backpropagation. Nel pratico i dati vengono divisi in mini-batch\footnote{L'uso di tutti i mini-batch costituisce un'epoca.} e l'aggiornamento dei parametri avviene dopo l'elaborazione di uno di questi usando la media degli errori ottenuti.\newline
+
+Alcune funzioni comuni:
+\begin{itemize}
+    \item Costo
+        \begin{itemize}
+            \item Quadratico
+                $$\frac12\|y-\hat y\|^2$$
+            \item Cross Entropy
+                $$\sum_i\left[y_i\log(\hat{y}_i)+(1-y_i)\log(1-\hat{y}_i)\right]$$
+        \end{itemize}
+    \item Attivazione
+        \begin{itemize}
+            \item Sigmoide
+                $$\frac1{1+e^{-x}}$$
+            \item \textit{tanh}
+                $$\frac{e^x-e^{-x}}{e^x+e^{-x}}$$
+            \item ReLU
+                $$max(0,x)$$
+        \end{itemize}
+    \item Softmax
+        $$\frac{e^{z_i}}
+{\sum_j e^{z_j}}$$
+\end{itemize}
+
+Quest'ultima si usa nella classificazione multiclasse, dove il target è un vettore di tipo \textit{one-hot}. Viene usata nell'ultimo strato e trasforma il vettore ricevuto in input in un vettore in cui l'$i$-esima riga rappresenta la probabilità di appartenenza all'$i$-esima classe.\newpage
+
+Esempio di aggiornamento (ReLU + Quadratico):
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        neuron/.style={scale=0.7,circle,draw,minimum size=13mm},
+        w/.style={fill=white,inner sep=1pt,font=\small}
+    ]
+    
+    %------------------------------------------------
+    % Input
+    %------------------------------------------------
+    \node[neuron] (x1) at (0,1) {$x_1$};
+    \node[neuron] (x2) at (0,-1) {$x_2$};
+    
+    %------------------------------------------------
+    % Primo layer nascosto
+    %------------------------------------------------
+    \node[neuron] (b1) at (5,2.2) {};
+    \node[above=1mm of b1] {$b_1$};
+    
+    \node[neuron] (b2) at (5,0) {};
+    \node[above=1mm of b2] {$b_2$};
+    
+    \node[neuron] (b3) at (5,-2.2) {};
+    \node[above=1mm of b3] {$b_3$};
+    
+    %------------------------------------------------
+    % Secondo layer nascosto
+    %------------------------------------------------
+    \node[neuron] (b4) at (10,1.2) {};
+    \node[above=1mm of b4] {$b_4$};
+    
+    \node[neuron] (b5) at (10,-1.2) {};
+    \node[above=1mm of b5] {$b_5$};
+    
+    %------------------------------------------------
+    % Output
+    %------------------------------------------------
+    \node[neuron] (out) at (13.5,0) {out};
+    
+    %================================================
+    % INPUT --> HIDDEN 1
+    %================================================
+    
+    \draw[->] (x1) -- (b1)
+    node[w,pos=.10,above] {$w_1$};
+    
+    \draw[->] (x1) -- (b2)
+    node[w,pos=.10,above] {$w_2$};
+    
+    \draw[->] (x1) -- (b3)
+    node[w,pos=.10,below] {$w_3$};
+    
+    \draw[->] (x2) -- (b1)
+    node[w,pos=.10,left] {$w_4$};
+    
+    \draw[->] (x2) -- (b2)
+    node[w,pos=.10,below] {$w_5$};
+    
+    \draw[->] (x2) -- (b3)
+    node[w,pos=.10,below] {$w_6$};
+    
+    %================================================
+    % HIDDEN 1 --> HIDDEN 2
+    %================================================
+    
+    \draw[->] (b1) -- (b4)
+    node[w,pos=.15,above] {$w_7$};
+    
+    \draw[->] (b1) -- (b5)
+    node[w,pos=.15,left] {$w_8$};
+    
+    \draw[->] (b2) -- (b4)
+    node[w,pos=.15,above] {$w_9$};
+    
+    \draw[->] (b2) -- (b5)
+    node[w,pos=.15,below] {$w_{10}$};
+    
+    \draw[->] (b3) -- (b4)
+    node[w,pos=.15,left] {$w_{11}$};
+    
+    \draw[->] (b3) -- (b5)
+    node[w,pos=.15,below] {$w_{12}$};
+    
+    %================================================
+    % HIDDEN 2 --> OUTPUT
+    %================================================
+    
+    \draw[->] (b4) -- (out)
+    node[w,pos=.20,above] {$w_{13}$};
+    
+    \draw[->] (b5) -- (out)
+    node[w,pos=.20,below] {$w_{14}$};
+    
+    \end{tikzpicture}
+\end{figure}
+
+\[
+z_i=\text{ output neurone }i,\
+a_i=ReLU(z_i)
+\]
+
+\vspace{5pt}
+
+
+\[
+a4)\ \frac{\partial L}{\partial w_6}
+=
+\frac{\partial L}{\partial \hat y}
+\frac{\partial \hat y}{\partial a_4}
+\frac{\partial a_4}{\partial z_4}
+\frac{\partial z_4}{\partial a_3}
+\frac{\partial a_3}{\partial z_3}
+\frac{\partial z_3}{\partial w_6}
+\]
+
+\vspace{5pt}
+
+
+\[
+a5)\ \frac{\partial L}{\partial w_6}
+=
+\frac{\partial L}{\partial \hat y}
+\frac{\partial \hat y}{\partial a_5}
+\frac{\partial a_5}{\partial z_5}
+\frac{\partial z_5}{\partial a_3}
+\frac{\partial a_3}{\partial z_3}
+\frac{\partial z_3}{\partial w_6}
+\]
+
+\vspace{5pt}
+
+
+\[
+\frac{\partial L}{\partial \hat y}=\hat y-y,\ ReLU'(z)=\begin{cases}
+    0 & \text{se } z\leq0\\
+    1 & \text{altrimenti}
+\end{cases}
+\]
+
+\vspace{5pt}
+
+
+\[
+\frac{\partial \hat y}{\partial a_4}=w_{13},\ \frac{\partial \hat y}{\partial a_5}=w_{14}
+\]
+
+\vspace{5pt}
+
+
+\[
+\frac{\partial a_4}{\partial z_4}=ReLU'(z_4),\ \frac{\partial a_5}{\partial z_5}=ReLU'(z_5)
+\]
+
+\vspace{5pt}
+
+
+\[
+\frac{\partial z_4}{\partial a_3}=w_{11},\ \frac{\partial z_5}{\partial a_3}=w_{12}
+\]
+
+\vspace{5pt}
+
+
+\[
+\frac{\partial a_3}{\partial z_3}=ReLU'(z_3)
+\]
+
+\vspace{5pt}
+
+
+\[
+\frac{\partial z_3}{\partial w_6}=x_2
+\]
+
+\vspace{5pt}
+
+\[
+\frac{\partial L}{\partial w_6}
+=(\hat y-y)x_2ReLU'(z_3)[w_{13}w_{11}ReLU'(z_4)+w_{14}w_{12}ReLU'(z_5)]\ \rightarrow\
+w_6^{new}=w_6-\eta\frac{\partial L}{\partial w_6}
+\]
+
+
+\subsection{CNN}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Tensori e operazioni}
+
+Un'immagine RGB può essere rappresentata come un tensore $\mathbb{R}^{3\times H\times W}$:
+
+\begin{figure}[h]
+\centering
+
+\begin{tikzpicture}[x={(1cm,0cm)},y={(0cm,1cm)},z={(0.5cm,0.3cm)}]
+
+\fill[red!40,opacity=0.8]
+(0,0,0)--(3,0,0)--(3,3,0)--(0,3,0)--cycle;
+
+\fill[green!40,opacity=0.8]
+(0,0,0.33)--(3,0,0.33)--(3,3,0.33)--(0,3,0.33)--cycle;
+
+\fill[blue!40,opacity=0.8]
+(0,0,0.66)--(3,0,0.66)--(3,3,0.66)--(0,3,0.66)--cycle;
+
+\node at (1.5,-0.4,0) {$W$};
+\node at (4.5,1.5,0) {$H$};
+
+\end{tikzpicture}
+\end{figure}
+
+Prendendo un kernel $\mathbb{R}^{3\times K\times K}$ si può applicare la generalizzazione della convoluzione di matrici, per ogni posizione:
+
+\[
+y=
+\sum_{c=1}^{3}
+\sum_{i=1}^{K}
+\sum_{j=1}^{K}
+X_c(i,j)K_c(i,j)
+\]\newline
+
+Utilizzando $C'$ kernel si ottiene un tensore  $\mathbb{R}^{C'\times H'\times W'}$ con:
+
+\[
+H'
+=
+\left\lfloor
+\frac{H+2P-K}{S}
+\right\rfloor+1,\
+W'
+=
+\left\lfloor
+\frac{W+2P-K}{S}
+\right\rfloor+1
+\]
+
+\vspace{5pt}
+
+dove:
+\begin{itemize}
+    \item $P$ è il padding usato
+    \item $S$ è lo stride (grandezza del passo)\newline
+\end{itemize}
+
+Esistono alcune varianti:
+
+\begin{itemize}
+
+\item \textbf{Convoluzione $1\times1$}
+
+    Combina solamente i canali.
+
+
+\item \textbf{Grouped Convolution}
+
+    I canali si dividono in $G$ gruppi indipendenti, ognuno viene convoluto separatamente e i risultati vengono concatenati.
+
+\item \textbf{Depthwise Separable Convolution}
+
+    Ogni canale ha un suo kernel, i risultati vengono poi concatenati con una $1\times1$.
+
+\item \textbf{Dilated Convolution}
+
+    Si sceglie un parametro di dilatazione $r>1$ che indica la distanza tra un peso ed il suo vicino, per esempio con $r=2$ c'è una distanza di 1:
+
+    $$
+    \begin{bmatrix}
+        a & 0 & b\\
+        0 & 0 & 0\\
+        c & 0 & d
+    \end{bmatrix}
+    $$\newline
+
+\end{itemize}
+
+
+Il pooling è un'operazione che riduce le dimensioni spaziali:
+
+\begin{itemize}
+
+\item \textbf{Max}
+
+Seleziona l'elemento massimo nella sua finestra.
+
+\item \textbf{Average}
+
+Calcola la media della sua finestra.
+
+\item \textbf{Global Max}
+
+Ogni canale viene sostituito dal suo massimo.
+
+\item \textbf{Global Average}
+
+Ogni canale viene sostituito dalla propria media.\newline
+
+\end{itemize}
+
+L'operazione inversa è l'upsampling:
+
+\begin{align*}
+\begin{bmatrix}
+    1 & 2\\
+    3 & 4
+\end{bmatrix}
+&\rightarrow
+\begin{bmatrix}
+    1 & 1 & 2 & 2\\
+    1 & 1 & 2 & 2\\
+    3 & 3 & 4 & 4\\
+    3 & 3 & 4 & 4\\
+\end{bmatrix}\text{ Nearest Neighbor}\\
+\\
+&\rightarrow
+\begin{bmatrix}
+    1 & 1.25 & 1.75 & 2\\
+    1.5 & 1.75 & 2.25 & 2.5\\
+    2.5 & 2.75 & 3.25 & 3.5\\
+    3 & 3.25 & 3.75 & 4\\
+\end{bmatrix}\text{ Bilinear interpolation}\newline
+\end{align*}
+
+\newpage
+
+\subsubsection{Funzionamento generale}
+
+Una CNN è una rete basata sui layer convoluzionali con un certo numero di filtri (kernel con pesi apprendibili). Un filtro nel pratico è implementato come una matrice di neuroni (con pesi uguali definiti dal filtro) che vede solo una parte di tutti gli input. Per esempio:
+
+$$
+IN=\begin{bmatrix}
+    1 & 2 & 3\\
+    4 & 5 & 6\\
+    7 & 8 & 9
+\end{bmatrix}
+,\ k_1=\begin{bmatrix}
+    0.1 & 0.2 \\
+    0.3 & 0.4 
+\end{bmatrix}
+,\ k_2=\begin{bmatrix}
+    0.5 & 0.6 \\
+    0.7 & 0.8
+\end{bmatrix}
+,\ k_3=\begin{bmatrix}
+    1.1 & 1.2 \\
+    1.3 & 1.4
+\end{bmatrix}
+,\ k_4=\begin{bmatrix}
+    1.5 & 1.6 \\
+    1.7 & 1.8
+\end{bmatrix}
+$$\newline
+
+Con stride 1 e struttura:
+
+$$\text{IN}\rightarrow\text{Conv 2 filtri}\rightarrow\text{Conv 2 filtri}$$\newline
+
+Il primo layer ha $k_1,k_2$ in cui:
+\begin{itemize}
+    \item Il primo neurone vede 1,2,4,5
+    \item Il secondo 2,3,5,6
+    \item Il terzo 4,5,7,8
+    \item Il quarto 5,6,8,9\newline
+\end{itemize}
+
+Facendo i calcoli:
+\[
+\begin{aligned}
+y_{11}&=1\cdot0.1+2\cdot0.2+4\cdot0.3+5\cdot0.4=3.7\\
+y_{12}&=2\cdot0.1+3\cdot0.2+5\cdot0.3+6\cdot0.4=4.7\\
+y_{13}&=4\cdot0.1+5\cdot0.2+7\cdot0.3+8\cdot0.4=6.7\\
+y_{14}&=5\cdot0.1+6\cdot0.2+8\cdot0.3+9\cdot0.4=7.7\\
+\\
+y_{21}&=1\cdot0.5+2\cdot0.6+4\cdot0.7+5\cdot0.8=8.5\\
+y_{22}&=2\cdot0.5+3\cdot0.6+5\cdot0.7+6\cdot0.8=11.1\\
+y_{23}&=4\cdot0.5+5\cdot0.6+7\cdot0.7+8\cdot0.8=16.3\\
+y_{24}&=5\cdot0.5+6\cdot0.6+8\cdot0.7+9\cdot0.8=18.9
+\end{aligned}
+\]\newline
+
+Si ottengono le 2 feature map:
+$$F_1=
+\begin{bmatrix}
+3.7 & 4.7\\
+6.7 & 7.7
+\end{bmatrix},\
+F_2=
+\begin{bmatrix}
+8.5 & 11.1\\
+16.3 & 18.9
+\end{bmatrix}
+$$\newline
+
+Il secondo layer ha $k_3,k_4$ e come input $F_1,F_2$. Avendo 2 input i filtri devono avere 2 canali, in questo caso per semplicità hanno gli stessi valori.
+
+\[
+\begin{aligned}
+z_1={}&
+(3.7\cdot1.1+4.7\cdot1.2+6.7\cdot1.3+7.7\cdot1.4)\\
+&+
+(8.5\cdot1.1+11.1\cdot1.2+16.3\cdot1.3+18.9\cdot1.4)\\
+={}&29.58+70.62=100.20\\
+\\
+z_2={}&
+(3.7\cdot1.5+4.7\cdot1.6+6.7\cdot1.7+7.7\cdot1.8)\\
+&+
+(8.5\cdot1.5+11.1\cdot1.6+16.3\cdot1.7+18.9\cdot1.8)\\
+={}&38.06+90.78=128.84
+\end{aligned}
+\]\newline
+
+Ottenendo:
+
+\[
+F_3=
+\begin{bmatrix}
+100.20
+\end{bmatrix}
+,\
+F_4=\begin{bmatrix}
+    128.84
+\end{bmatrix}
+\]
+
+\subsubsection{Casi d'uso e metriche}
+
+\begin{itemize}
+    \item \textbf{Classificazione di immagini}
+
+        Per creare una CNN di questo tipo vanno convertite tutte le feature map finali in un unico vettore, che viene poi dato come input ad un classificatore ``normale''.
+
+        Metriche:
+        \begin{itemize}
+            \item \textbf{Matrice di confusione}
+
+                    Mostra graficamente le decisioni prese\footnote{Vedendola una classe alla volta si ha $H_0:\text{immagine non di classe }X$.}:
+
+                    \begin{table}[ht]
+                        \centering
+                        \begin{tabular}{|c|c|c|c|}
+                            \hline
+                                   & Cane & Gatto & Volpe  \\
+                            \hline
+                            Cane   & \textcolor{blue}{47}   & \textcolor{orange}{3}     & \textcolor{orange}{0}       \\
+                            \hline
+                            Gatto  & \textcolor{red}{11}   & 56     & 0       \\
+                            \hline
+                            Volpe  & \textcolor{red}{1}   & 0     & 66        \\
+                            \hline
+                        \end{tabular}
+
+                    \end{table}
+
+                Dove per la classe Cane si hanno 47 scelte giuste (\textcolor{blue}{TP}), 12 falsi positivi (\textcolor{red}{FP}) e 3 falsi negativi (\textcolor{orange}{FN}).
+
+                \vspace{5pt}
+
+        \item \textbf{Accuratezza}: $\frac1N\sum_{i=1}^N\mathbf{1_{\hat{y_i}=y_i}}$ (predizioni corrette)
+        \item \textbf{Precisione} (per classe): $Pr=\frac{TP}{TP+FP}$ (affidabilità predizioni)
+        \item \textbf{Recall} (per classe): $Re=\frac{TP}{TP+FN}$ (affidabilità riconoscimento)
+        \item \textbf{F1}: $2\frac{PrRe}{Pr+Re}$ (equilibrio Precisione-Recall)\newline
+            
+        \end{itemize}
+
+    \item \textbf{Estrazione di caratteristiche}
+
+        Se si rimuove la parte che si occupa di classificare da un classificatore si ottiene una CNN in cui l'ultimo layer totalmente connesso genera un vettore (embedding) contenente le caratteristiche dell'immagine. Combinando i risultati si genera uno spazio in cui dato un vettore è possibile cercare i vettori simili che corrispondono a immagini simili, un'applicazione è il riconoscimento facciale.
+
+    \item \textbf{Metric learning}
+
+        Si vuole costruire lo spazio di embedding in modo tale che immagini della stessa classe siano vicine e immagini di classi diverse siano lontane. Per farlo si usano delle funzioni di perdita specifiche:
+
+    \begin{itemize}
+        \item \textbf{Contrastive Loss}
+        \[
+        \ell(x_i,x_j)=
+        \begin{cases}
+        \|f(x_i)-f(x_j)\|_2^2 & \text{se hanno stessa classe}\\
+        -\|f(x_i)-f(x_j)\|_2^2 & \text{altrimenti}
+        \end{cases}
+        \]
+    
+        dove $x_i,x_j$ sono due immagini e $f(\cdot)$ è l'embedding.
+    
+        \item \textbf{Triplet Loss}
+        \[
+        \ell(A,P,N)=
+        \|f(A)-f(P)\|_2^2<\|f(A)-f(N)\|_2^2
+        \]
+    
+        dove $A$ è l'immagine da confrontare, $P$ è un'immagine della stessa classe di $A$ e $N$ appartiene ad una classe diversa. 
+    
+        \item \textbf{Angular Triplet Loss}
+        \[
+        \ell(A,P,N)=
+        \max\!\left(
+        0,
+        \tilde f(A)\cdot\tilde f(N)-
+        \tilde f(A)\cdot\tilde f(P)
+        \right)
+        \]
+    
+        dove $\tilde f(\cdot)$ è un embedding normalizzato e $\cdot$ è il prodotto scalare.
+    \end{itemize}
+
+    La rete che impara a costruire questo spazio ha come input (durante l'addestramento) $n$-uple di immagini, dove $n$ dipende dalla loss.
+
+    \item \textbf{Segmentazione semantica}
+
+        Si vuole associare ad ogni pixel dell'immagine una classe, in questo caso si usa una variante delle CNN detta Fully Convolutional Network in cui invece dei layer totalmente connessi si fa upsampling delle feature map in modo da riportarle alle dimensioni dell'immagine di input.
+
+        Metriche:
+        \begin{itemize}
+            \item \textbf{IoU} (per classe): $\frac{TP}{TP+FP+FN}$
+            \item \textbf{mIoU}: $\frac1K\sum_{k=1}^KIoU_k$
+            \item \textbf{Dice Score} (per classe): $\frac{2TP}{2Tp+FP+FN}$
+            \item \textbf{Accuratezza pixel}: $\frac1{HW}\sum_kTP_k$
+        \end{itemize}
+    
+\end{itemize}
+
+\subsection{Problemi comuni}
+
+\begin{itemize}
+    \item \textbf{Sbilanciamento dataset}
+
+        \begin{itemize}
+            \item \textbf{Inter-classe}
+
+                Alcune classi appaiono più volte di altre, risolvibile con la Cross-entropy pesata.
+            
+            \item \textbf{Intra-classe}
+
+                Ridondanza o presenza di campioni ``facili'', risolvibile con la Focal loss.
+            
+        \end{itemize}
+
+    \item \textbf{Scala dei dati}
+
+        Se il dataset presenta elementi i cui valori sono distribuiti su scale molto diverse possono sorgere problemi (soprattutto durante l'addestramento). Per uniformarli ci sono diversi metodi: normalizzazione\footnote{La normalizzazione non viene fatta considerando il dataset per intero, le 3 parti: training, validazione e test sono normalizzate in modo indipendente tra loro.}, mappatura in [0,1], ecc...
+    
+    \item \textbf{Overfitting}
+
+        Il modello si specializza troppo sui dati di training con conseguente difficoltà a generalizzare, alcune possibili soluzioni sono:
+
+        \begin{itemize}
+            \item \textbf{Dati di validazione}
+
+                Sottoinsieme di dati usati per controllare l'andamento dell'addestramento ma non per l'addestramento in sé, se l'accuratezza di un modello sale ma quella della validazione resta uguale o scende è un segnale di possibile overfitting. 
+            
+            \item \textbf{Dropout layer}
+
+                Il valore di output di ogni nodo del layer precedente viene posto a 0 con una certa probabilità.
+            
+            \item \textbf{Batch Normalization layer}
+
+            Si calcolano media e varianza\footnote{Questo viene fatto in modo indipendente per ogni canale.} del batch arrivato come input a questo layer, i valori vengono quindi normalizzati e trasformati:
+            \[
+            \hat{x}_i=\frac{x_i-\mu_B}{\sqrt{\sigma_B^2+\varepsilon}}\rightarrow
+            y_i=\gamma\hat{x}_i+\beta
+            \]
+
+            \vspace{5pt}
+
+            con $\gamma,\beta$ apprendibili. Dopo la fine dell'addestramento si usano media e varianza mobili invece di ricalcolare di volta in volta.
+        
+        \end{itemize}
+
+\end{itemize}
+
+\newpage
+
+\subsection{Altri argomenti}
+
+\begin{itemize}
+    \item \textbf{Transfer learning}  
+    
+    Riutilizzare una rete preaddestrata su un dataset più generale per un nuovo problema più specifico. 
+
+    \begin{itemize}
+        \item \textbf{Linear probing} 
+        
+        Durante il nuovo addestramento gli unici pesi che vengono aggiornati sono quelli del classificatore finale.
+        
+        \item \textbf{Fine tuning}
+
+        Si aggiornano anche i pesi di alcuni o tutti i layer, generalmente con un learning rate piccolo.
+        
+    \end{itemize}
+
+    \item \textbf{Knowledge distillation} 
+    
+    Per addestrare un modello piccolo (\emph{student}) si usa un modello preaddestrato più grande (\emph{teacher}), lo scopo è ottenere un modello che riproduca le probabilità di uscita con costo computazionale inferiore.
+
+\end{itemize}
+
+\end{document}
